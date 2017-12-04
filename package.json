@@ -1,0 +1,114 @@
+{
+  "name": "@semantic-release/git",
+  "description": "Set of semantic-release plugins to publish to a git repository",
+  "version": "0.0.0-development",
+  "author": "Pierre Vanduynslager (https://github.com/pvdlg)",
+  "bugs": {
+    "url": "https://github.com/semantic-release/git/issues"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "contributors": [
+    "Stephan Bönnemann <stephan@boennemann.me> (http://boennemann.me)",
+    "Gregor Martynus (https://twitter.com/gr2m)"
+  ],
+  "dependencies": {
+    "@semantic-release/error": "^2.1.0",
+    "debug": "^3.1.0",
+    "dir-glob": "^2.0.0",
+    "execa": "^0.8.0",
+    "fs-extra": "^4.0.2",
+    "git-url-parse": "^7.0.1",
+    "lodash": "^4.17.4",
+    "micromatch": "^3.1.4",
+    "p-reduce": "^1.0.0",
+    "semver": "^5.4.1"
+  },
+  "devDependencies": {
+    "ava": "^0.24.0",
+    "clear-module": "^2.1.0",
+    "codecov": "^3.0.0",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.0.0",
+    "dockerode": "^2.5.3",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-prettier": "^2.3.0",
+    "file-url": "^2.0.2",
+    "get-stream": "^3.0.0",
+    "git-log-parser": "^1.2.0",
+    "nyc": "^11.1.0",
+    "p-retry": "^1.0.0",
+    "prettier": "~1.8.2",
+    "semantic-release": "^11.0.0",
+    "sinon": "^4.1.2",
+    "tempy": "^0.2.1",
+    "xo": "^0.18.2"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "files": [
+    "lib",
+    "index.js"
+  ],
+  "homepage": "https://github.com/semantic-release/git#readme",
+  "keywords": [
+    "changelog",
+    "commit",
+    "conventional-changelog",
+    "conventional-commits",
+    "git",
+    "release",
+    "semantic-release",
+    "version"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "nyc": {
+    "include": [
+      "lib/**/*.js",
+      "index.js"
+    ],
+    "reporter": [
+      "json",
+      "text",
+      "html"
+    ],
+    "all": true
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "trailingComma": "es5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/semantic-release/git.git"
+  },
+  "scripts": {
+    "cm": "git-cz",
+    "codecov": "codecov -f coverage/coverage-final.json",
+    "lint": "xo",
+    "pretest": "npm run lint",
+    "semantic-release": "semantic-release",
+    "test": "nyc ava -v"
+  },
+  "xo": {
+    "extends": [
+      "prettier"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": 2
+    }
+  }
+}
