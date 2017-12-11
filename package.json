@@ -20,7 +20,7 @@
     "debug": "^3.1.0",
     "dir-glob": "^2.0.0",
     "execa": "^0.8.0",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^5.0.0",
     "git-url-parse": "^7.0.1",
     "lodash": "^4.17.4",
     "micromatch": "^3.1.4",
