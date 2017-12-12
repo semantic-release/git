@@ -3,17 +3,18 @@ import {stub} from 'sinon';
 import getLastRelease from '../lib/get-last-release';
 import {gitRepo, gitCommit, gitTagVersion, gitShallowClone} from './helpers/git-utils';
 
+// Save the current working diretory
+const cwd = process.cwd();
+
 test.beforeEach(t => {
-  // Save the current working diretory
-  t.context.cwd = process.cwd();
   // Stub the logger functions
   t.context.log = stub();
   t.context.logger = {log: t.context.log};
 });
 
-test.afterEach.always(t => {
+test.afterEach.always(() => {
   // Restore the current working directory
-  process.chdir(t.context.cwd);
+  process.chdir(cwd);
 });
 
 test.serial('Get the highest valid tag', async t => {
@@ -30,7 +31,7 @@ test.serial('Get the highest valid tag', async t => {
   await gitTagVersion('v3.0');
 
   t.deepEqual(await getLastRelease(t.context.logger), {gitHead: 'v2.0.0', version: '2.0.0'});
-  t.true(t.context.log.calledWith('Found git tag version %s', 'v2.0.0'));
+  t.deepEqual(t.context.log.args[0], ['Found git tag version %s', 'v2.0.0']);
 });
 
 test.serial('Return "undefined" if no valid tag is found', async t => {
@@ -45,7 +46,7 @@ test.serial('Return "undefined" if no valid tag is found', async t => {
   await gitTagVersion('v3.0');
 
   t.falsy(await getLastRelease(t.context.logger));
-  t.true(t.context.log.calledWith('No git tag version found'));
+  t.is(t.context.log.args[0][0], 'No git tag version found');
 });
 
 test.serial('Retrieve tags even if not included in the shallow clone', async t => {
@@ -60,5 +61,5 @@ test.serial('Retrieve tags even if not included in the shallow clone', async t =
   await gitShallowClone(repo);
 
   t.deepEqual(await getLastRelease(t.context.logger), {gitHead: 'v2.0.0', version: '2.0.0'});
-  t.true(t.context.log.calledWith('Found git tag version %s', 'v2.0.0'));
+  t.deepEqual(t.context.log.args[0], ['Found git tag version %s', 'v2.0.0']);
 });

@@ -18,17 +18,18 @@ test.before(async () => {
   await gitbox.start();
 });
 
+// Save the current process.env
+const envBackup = Object.assign({}, process.env);
+// Save the current working diretory
+const cwd = process.cwd();
+
 test.beforeEach(t => {
-  // Save the current process.env
-  t.context.env = Object.assign({}, process.env);
   // Delete env paramaters that could have been set on the machine running the tests
   delete process.env.GH_TOKEN;
   delete process.env.GITHUB_TOKEN;
   delete process.env.GIT_CREDENTIALS;
   delete process.env.GIT_EMAIL;
   delete process.env.GIT_USERNAME;
-  // Save the current working diretory
-  t.context.cwd = process.cwd();
   // Clear npm cache to refresh the module state
   clearModule('..');
   t.context.m = require('..');
@@ -37,11 +38,11 @@ test.beforeEach(t => {
   t.context.logger = {log: t.context.log};
 });
 
-test.afterEach.always(t => {
+test.afterEach.always(() => {
   // Restore process.env
-  process.env = Object.assign({}, t.context.env);
+  process.env = envBackup;
   // Restore the current working directory
-  process.chdir(t.context.cwd);
+  process.chdir(cwd);
 });
 
 test.after.always(async () => {

@@ -4,9 +4,10 @@ import {stub} from 'sinon';
 import publish from '../lib/publish';
 import {gitRepo, gitGetCommit, gitRemoteTagHead, gitCommitedFiles} from './helpers/git-utils';
 
+// Save the current process.env
+const envBackup = Object.assign({}, process.env);
+
 test.beforeEach(async t => {
-  // Save the current process.env
-  t.context.env = Object.assign({}, process.env);
   // Delete env variables in case they are on the machine running the tests
   delete process.env.GH_TOKEN;
   delete process.env.GITHUB_TOKEN;
@@ -22,9 +23,9 @@ test.beforeEach(async t => {
   t.context.options = {repositoryUrl: t.context.repositoryUrl, branch: t.context.branch};
 });
 
-test.afterEach.always(t => {
+test.afterEach.always(() => {
   // Restore process.env
-  process.env = Object.assign({}, t.context.env);
+  process.env = envBackup;
 });
 
 test.serial('With default values', async t => {
@@ -49,11 +50,11 @@ test.serial('With default values', async t => {
   t.is(commit.author.name, 'semantic-release-bot');
   t.is(commit.author.email, 'semantic-release-bot@martynus.net');
 
-  t.true(t.context.log.calledWith('Create %s', 'CHANGELOG.md'));
-  t.true(t.context.log.calledWith('Add %s to the release commit', 'CHANGELOG.md'));
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 1));
-  t.true(t.context.log.calledWith('Creating tag %s', nextRelease.gitTag));
-  t.true(t.context.log.calledWith('Published Github release: %s', nextRelease.gitTag));
+  t.deepEqual(t.context.log.args[0], ['Create %s', 'CHANGELOG.md']);
+  t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'CHANGELOG.md']);
+  t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 1]);
+  t.deepEqual(t.context.log.args[3], ['Creating tag %s', nextRelease.gitTag]);
+  t.deepEqual(t.context.log.args[4], ['Published Github release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Commit package.json and npm-shrinkwrap.json if they exists and have been changed', async t => {
@@ -67,9 +68,10 @@ test.serial('Commit package.json and npm-shrinkwrap.json if they exists and have
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package.json']);
-  t.true(t.context.log.calledWith('Add %s to the release commit', 'package.json'));
-  t.true(t.context.log.calledWith('Add %s to the release commit', 'npm-shrinkwrap.json'));
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 3));
+
+  t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'package.json']);
+  t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
+  t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 3]);
 });
 
 test.serial('Prepend the CHANGELOG.md if there is an existing one', async t => {
@@ -135,7 +137,7 @@ test.serial('Exclude package.json and and npm-shrinkwrap.json if "assets" is def
 test.serial('Allow to customize the commit message', async t => {
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}
-    
+
 Last release: \${lastRelease.version}
 \${nextRelease.notes}`,
   };
@@ -189,7 +191,7 @@ test.serial('Commit files matching the patterns in "assets"', async t => {
   ]);
 
   // Found 6 files as file5.js is referenced in `asset` but ignored due to .gitignore
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 6));
+  t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 6]);
 });
 
 test.serial('Commit files matching the patterns in "assets" as Objects', async t => {
@@ -225,7 +227,7 @@ test.serial('Commit files matching the patterns in "assets" as Objects', async t
     'file1.js',
   ]);
   // Found 6 files as file5.js is referenced in `asset` but ignored due to .gitignore
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 6));
+  t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 6]);
 });
 
 test.serial('Commit files matching the patterns in "assets" as single glob', async t => {
@@ -239,7 +241,8 @@ test.serial('Commit files matching the patterns in "assets" as single glob', asy
   await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
   t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'dist/file1.js']);
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 2));
+
+  t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 2]);
 });
 
 test.serial('Commit files matching the patterns in "assets", including dot files', async t => {
@@ -252,7 +255,8 @@ test.serial('Commit files matching the patterns in "assets", including dot files
   await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
   t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'dist/.dotfile']);
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 2));
+
+  t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 2]);
 });
 
 test.serial('Skip negated pattern if its alone in its group', async t => {
@@ -265,5 +269,6 @@ test.serial('Skip negated pattern if its alone in its group', async t => {
   await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
   t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md']);
-  t.true(t.context.log.calledWith('Found %d file(s) to commit', 1));
+
+  t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 1]);
 });
