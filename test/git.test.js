@@ -15,14 +15,12 @@ import {
   gitRemoteTagHead,
 } from './helpers/git-utils';
 
-test.beforeEach(t => {
-  // Save the current working diretory
-  t.context.cwd = process.cwd();
-});
+// Save the current working diretory
+const cwd = process.cwd();
 
-test.afterEach.always(t => {
+test.afterEach.always(() => {
   // Restore the current working directory
-  process.chdir(t.context.cwd);
+  process.chdir(cwd);
 });
 
 test.serial('Unshallow repository', async t => {
