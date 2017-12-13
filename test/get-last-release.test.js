@@ -1,7 +1,7 @@
 import test from 'ava';
 import {stub} from 'sinon';
 import getLastRelease from '../lib/get-last-release';
-import {gitRepo, gitCommit, gitTagVersion, gitShallowClone} from './helpers/git-utils';
+import {gitRepo, gitCommit, gitTagVersion, gitShallowClone, gitCheckout} from './helpers/git-utils';
 
 // Save the current working diretory
 const cwd = process.cwd();
@@ -32,6 +32,28 @@ test.serial('Get the highest valid tag', async t => {
 
   t.deepEqual(await getLastRelease(t.context.logger), {gitHead: 'v2.0.0', version: '2.0.0'});
   t.deepEqual(t.context.log.args[0], ['Found git tag version %s', 'v2.0.0']);
+});
+
+test.serial('Get the highest tag in the history of the current branch', async t => {
+  // Create a git repository, set the current working directory at the root of the repo
+  await gitRepo();
+  // Add commit to the master branch
+  await gitCommit('First');
+  // Create the tag corresponding to version 1.0.0
+  // Create the new branch 'other-branch' from master
+  await gitCheckout('other-branch');
+  // Add commit to the 'other-branch' branch
+  await gitCommit('Second');
+  // Create the tag corresponding to version 3.0.0
+  await gitTagVersion('v3.0.0');
+  // Checkout master
+  await gitCheckout('master', false);
+  // Add another commit to the master branch
+  await gitCommit('Third');
+  // Create the tag corresponding to version 2.0.0
+  await gitTagVersion('v2.0.0');
+
+  t.deepEqual(await getLastRelease(t.context.logger), {gitHead: 'v2.0.0', version: '2.0.0'});
 });
 
 test.serial('Return "undefined" if no valid tag is found', async t => {

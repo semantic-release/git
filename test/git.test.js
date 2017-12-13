@@ -5,8 +5,6 @@ import {unshallow, gitTags, add, getModifiedFiles, config, commit, tag, gitHead,
 import {
   gitRepo,
   gitCommit,
-  gitCheckout,
-  gitTagVersion,
   gitShallowClone,
   gitGetCommit,
   gitGetConfig,
@@ -47,30 +45,6 @@ test.serial('Do not throw error when unshallow a complete repository', async t =
   // Add commits to the master branch
   await gitCommit('First');
   await t.notThrows(unshallow());
-});
-
-test.serial('Get the tags in the history of the current branch', async t => {
-  // Create a git repository, set the current working directory at the root of the repo
-  await gitRepo();
-  // Add commit to the master branch
-  await gitCommit('First');
-  // Create the tag corresponding to version 1.0.0
-  await gitTagVersion('v1.0.0');
-  // Create the new branch 'other-branch' from master
-  await gitCheckout('other-branch');
-  // Add commit to the 'other-branch' branch
-  await gitCommit('Second');
-  // Create the tag corresponding to version 2.0.0
-  await gitTagVersion('v2.0.0');
-  // Checkout master
-  await gitCheckout('master', false);
-  // Add another commit to the master branch
-  await gitCommit('Third');
-  // Create the tag corresponding to version 3.0.0
-  await gitTagVersion('v3.0.0');
-
-  // Verify the git tag v2.0.0 is not returned as it is not accessible on the current branch
-  t.deepEqual(await gitTags(), ['v1.0.0', 'v3.0.0']);
 });
 
 test.serial('Throws error if obtaining the tags fails', async t => {
