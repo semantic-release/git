@@ -130,14 +130,6 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', as
   t.is(error.code, 'EINVALIDMESSAGE');
 });
 
-test('Throw SemanticReleaseError if "changelog" option is not a Boolean', async t => {
-  const changelog = 42;
-  const error = await t.throws(verify({changelog}, {}, t.context.logger));
-
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDCHANGELOG');
-});
-
 test.serial('Verify undefined "message" and "assets"', async t => {
   // Create a git repository with a remote, set the current working directory at the root of the repo
   const repo = await gitRepo(true);

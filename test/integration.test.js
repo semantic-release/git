@@ -1,4 +1,4 @@
-import {outputFile, readFile} from 'fs-extra';
+import {outputFile} from 'fs-extra';
 import test from 'ava';
 import {stub} from 'sinon';
 import clearModule from 'clear-module';
@@ -156,7 +156,6 @@ test.serial('Publish from a shallow clone', async t => {
   const branch = 'master';
   // Create a remote repo, initialize it, create a local shallow clone and set the cwd to the clone
   const {repositoryUrl, authUrl} = await gitbox.createRepo('publish', branch);
-  await outputFile('CHANGELOG.md', 'Version 1.0.0 changelog');
   await outputFile('package.json', "{name: 'test-package', version: '1.0.0'}");
   await outputFile('dist/file.js', 'Initial content');
   await outputFile('dist/file.css', 'Initial content');
@@ -176,8 +175,7 @@ test.serial('Publish from a shallow clone', async t => {
   };
   await t.context.m.publish(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 
-  t.is((await readFile('CHANGELOG.md')).toString(), `${nextRelease.notes}\n\nVersion 1.0.0 changelog\n`);
-  t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'dist/file.js', 'package.json']);
+  t.deepEqual(await gitCommitedFiles(), ['dist/file.js', 'package.json']);
   const commit = (await gitGetCommit())[0];
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
@@ -191,7 +189,6 @@ test.serial('Publish from a detached head repository', async t => {
   const branch = 'master';
   // Create a remote repo, initialize it, create a local shallow clone and set the cwd to the clone
   const {repositoryUrl, authUrl} = await gitbox.createRepo('publish-detached-head', branch);
-  await outputFile('CHANGELOG.md', 'Version 1.0.0 changelog');
   await outputFile('package.json', "{name: 'test-package', version: '1.0.0'}");
   await outputFile('dist/file.js', 'Initial content');
   await outputFile('dist/file.css', 'Initial content');
@@ -211,8 +208,7 @@ test.serial('Publish from a detached head repository', async t => {
   };
   await t.context.m.publish(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 
-  t.is((await readFile('CHANGELOG.md')).toString(), `${nextRelease.notes}\n\nVersion 1.0.0 changelog\n`);
-  t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'dist/file.js', 'package.json']);
+  t.deepEqual(await gitCommitedFiles(), ['dist/file.js', 'package.json']);
   const commit = (await gitGetCommit())[0];
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
@@ -224,7 +220,7 @@ test.serial('Verify authentication only on the fist call', async t => {
   const branch = 'master';
   // Create a remote repo, initialize it, create a local shallow clone and set the cwd to the clone
   const {repositoryUrl} = await gitbox.createRepo('complete-release', branch);
-  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Version 2.0.0 changelog'};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
 
   await t.notThrows(t.context.m.verifyConditions({}, {logger: t.context.logger, options: {repositoryUrl, branch}}));
   t.falsy(await t.context.m.getLastRelease({}, {logger: t.context.logger, options: {repositoryUrl, branch}}));
