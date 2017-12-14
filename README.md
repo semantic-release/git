@@ -16,7 +16,7 @@ Determine the Git tag and version of the last tagged release.
 
 ## publish
 
-Update the `CHANGELOG.md` file and publish a release commit, optionnaly including addtional files.
+Publish a release commit, including configurable files.
 
 ## Configuration
 
@@ -32,7 +32,7 @@ Using the `GIT_CREDENTIALS` environment variable is the recommended configuratio
 
 `GIT_CREDENTIALS` can be your Git username and passort in the format `<username>:<password>` or a token for certain Git providers like [Github](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/), [Bitbucket](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html) or [Gitlab](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html).
 
-If the `GH_TOKEN` or `GITHUB_TOKEN` environment variables are defined their value will be used as a replacement for `GIT_CREDENTIALS`. 
+If the `GH_TOKEN` or `GITHUB_TOKEN` environment variables are defined their value will be used as a replacement for `GIT_CREDENTIALS`.
 
 ### Environment variables
 
@@ -46,7 +46,6 @@ If the `GH_TOKEN` or `GITHUB_TOKEN` environment variables are defined their valu
 
 | Options        | Description                                                    | Default                                                                     |
 | -------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `changelog`    | Whether to create/update the `CHANGELOG.md` file.              | `true`                                                                      |
 | `message`      | The message for the release commit. See [message](#message).   | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`  |
 | `assets`       | Files to include in the release commit. See [assets](#assets). | `["package.json", "npm-shrinkwrap.json"]`                                   |
 
@@ -113,18 +112,19 @@ Options can be set within the plugin definition in the `semantic-release` config
 }
 ```
 
-When using with the [npm](https://github.com/semantic-release/npm) plugin or the [github](https://github.com/semantic-release/github) plugin:
-- The [npm](https://github.com/semantic-release/npm) plugin must be called first in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
+When using with the [changelog](https://github.com/semantic-release/changelog), [npm](https://github.com/semantic-release/npm) or [github](https://github.com/semantic-release/github) plugins:
+- The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [git](https://github.com/semantic-release/git) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
+- The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
 - The [github](https://github.com/semantic-release/github) plugin must be called last to create a [Github Release](https://help.github.com/articles/about-releases/) that reference the tag created by the [git](https://github.com/semantic-release/git) plugin.
 
-To use with [github](https://github.com/semantic-release/github), [npm](https://github.com/semantic-release/npm) and [condition-travis](https://github.com/semantic-release/condition-travis):
+To use with the [changelog](https://github.com/semantic-release/changelog), [github](https://github.com/semantic-release/github), [npm](https://github.com/semantic-release/npm) and [condition-travis](https://github.com/semantic-release/condition-travis) plugins:
 
 ```json
 {
   "release": {
-    "verifyConditions": ["@semantic-release/condition-travis", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"],
+    "verifyConditions": ["@semantic-release/condition-travis", "@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"],
     "getLastRelease": "@semantic-release/npm",
-    "publish": ["@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"]
+    "publish": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"]
   }
 }
 ```
@@ -330,7 +330,7 @@ $ travis login
 Add the [environment](https://github.com/travis-ci/travis.rb#env) variable `SSH_PASSPHRASE` to Travis with the value set during the [SSH keys generation](#generate-the-ssh-keys) step:
 
 ```bash
-$ travis env set SSH_PASSPHRASE <ssh_passphrase> 
+$ travis env set SSH_PASSPHRASE <ssh_passphrase>
 ```
 
 [Encrypt](https://github.com/travis-ci/travis.rb#encrypt) the `git_deploy_key` (private key) using a symmetric encryption (AES-256), and store the secret in a secure environment variable in the Travis environment:
