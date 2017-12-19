@@ -2,7 +2,7 @@ import test from 'ava';
 import {outputFile} from 'fs-extra';
 import {stub} from 'sinon';
 import publish from '../lib/publish';
-import {gitRepo, gitCommit, gitGetCommit, gitRemoteTagHead, gitCommitedFiles} from './helpers/git-utils';
+import {gitRepo, gitGetCommit, gitRemoteTagHead, gitCommitedFiles} from './helpers/git-utils';
 
 // Save the current process.env
 const envBackup = Object.assign({}, process.env);
@@ -19,7 +19,6 @@ test.beforeEach(async t => {
   t.context.logger = {log: t.context.log};
   // Create a git repository with a remote, set the current working directory at the root of the repo
   t.context.repositoryUrl = await gitRepo(true);
-  await gitCommit('Initial commit');
   t.context.branch = 'master';
   t.context.options = {repositoryUrl: t.context.repositoryUrl, branch: t.context.branch};
 });
@@ -126,9 +125,7 @@ test.serial('Commit files matching the patterns in "assets"', async t => {
   // file5.js is ignore because it's in the .gitignore
   // file6.js and file7.css are included because dir2 is expanded
   t.deepEqual(await gitCommitedFiles(), ['dir/file2.js', 'dir2/file6.js', 'dir2/file7.css', 'file1.js']);
-
-  // Found 5 files as file5.js is referenced in `asset` but ignored due to .gitignore
-  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 4]);
 });
 
 test.serial('Commit files matching the patterns in "assets" as Objects', async t => {
@@ -157,8 +154,7 @@ test.serial('Commit files matching the patterns in "assets" as Objects', async t
   // file5.js is ignore because it's in the .gitignore
   // file6.js and file7.css are included because dir2 is expanded
   t.deepEqual(await gitCommitedFiles(), ['dir/file2.js', 'dir2/file6.js', 'dir2/file7.css', 'file1.js']);
-  // Found 5 files as file5.js is referenced in `asset` but ignored due to .gitignore
-  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 4]);
 });
 
 test.serial('Commit files matching the patterns in "assets" as single glob', async t => {
@@ -208,6 +204,25 @@ test.serial('Skip commit if there is no files to commit', async t => {
   const pluginConfig = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+
+  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+
+  // Verify the remote repo has a the version referencing the same commit sha at the local head
+  const commit = (await gitGetCommit())[0];
+  t.is(await gitRemoteTagHead(t.context.repositoryUrl, nextRelease.gitTag), commit.hash);
+  // Verify the files that have been commited
+  t.deepEqual(await gitCommitedFiles(), []);
+  t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
+  t.deepEqual(t.context.log.args[1], ['Published Git release: %s', nextRelease.gitTag]);
+});
+
+test.serial('Skip commit if all the modified files are in .gitignore', async t => {
+  const pluginConfig = {assets: 'dist'};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+
+  await outputFile('dist/files1.js', 'Test content');
+  await outputFile('.gitignore', 'dist/**/*');
 
   await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
