@@ -117,24 +117,24 @@ When using with the [changelog](https://github.com/semantic-release/changelog), 
 - The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
 - The [github](https://github.com/semantic-release/github) plugin must be called last to create a [Github Release](https://help.github.com/articles/about-releases/) that reference the tag created by the [git](https://github.com/semantic-release/git) plugin.
 
-To use with the [changelog](https://github.com/semantic-release/changelog), [github](https://github.com/semantic-release/github), [npm](https://github.com/semantic-release/npm) and [condition-travis](https://github.com/semantic-release/condition-travis) plugins:
+To use with the [changelog](https://github.com/semantic-release/changelog), [github](https://github.com/semantic-release/github) and [npm](https://github.com/semantic-release/npm) plugins:
 
 ```json
 {
   "release": {
-    "verifyConditions": ["@semantic-release/condition-travis", "@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"],
+    "verifyConditions": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"],
     "getLastRelease": "@semantic-release/npm",
     "publish": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"]
   }
 }
 ```
 
-To use with [github](https://github.com/semantic-release/github), and [condition-travis](https://github.com/semantic-release/condition-travis):
+To use with [github](https://github.com/semantic-release/github):
 
 ```json
 {
   "release": {
-    "verifyConditions": ["@semantic-release/condition-travis", "@semantic-release/git", "@semantic-release/github"],
+    "verifyConditions": ["@semantic-release/git", "@semantic-release/github"],
     "getLastRelease": "@semantic-release/git",
     "publish": ["@semantic-release/git", "@semantic-release/github"]
   }
