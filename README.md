@@ -1,6 +1,6 @@
 # @semantic-release/git
 
-Set of [semantic-release](https://github.com/semantic-release/semantic-release) plugins for publishing to a [git](https://git-scm.com/) repository.
+Set of [Semantic-release](https://github.com/semantic-release/semantic-release) plugins for publishing to a [git](https://git-scm.com/) repository.
 
 [![Travis](https://img.shields.io/travis/semantic-release/git.svg)](https://travis-ci.org/semantic-release/git)
 [![Codecov](https://img.shields.io/codecov/c/github/semantic-release/git.svg)](https://codecov.io/gh/semantic-release/git)
@@ -20,17 +20,17 @@ Publish a release commit, including configurable files.
 
 ## Configuration
 
-### Git Repository authentication
+### Git repository authentication
 
 The `Git` authentication configuration is **required** and can be set either:
 - with the [`GIT_CREDENTIALS` environment variable](#environment-variables) for accessing the repository via [https](https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols#_the_http_protocols)
 - or with [ssh keys](#set-up-the-ssh-keys) to access via [ssh](https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols#_the_ssh_protocol)
 
-If the `GIT_CREDENTIALS` environment variable is set the remote Git repository will automatically be accessed via `https`, independently of the `repositoryUrl` format configured in `semantic-release` (the format will be automatically converted as needed).
+If the `GIT_CREDENTIALS` environment variable is set, the remote Git repository will automatically be accessed via `https`, independently of the `repositoryUrl` format configured in the Semantic-release (the format will be automatically converted as needed).
 
 Using the `GIT_CREDENTIALS` environment variable is the recommended configuration.
 
-`GIT_CREDENTIALS` can be your Git username and passort in the format `<username>:<password>` or a token for certain Git providers like [Github](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/), [Bitbucket](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html) or [Gitlab](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html).
+`GIT_CREDENTIALS` can be your Git username and password in the format `<username>:<password>` or a token for certain Git providers like [GitHub](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/), [Bitbucket](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html) or [GitLab](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html).
 
 If the `GH_TOKEN` or `GITHUB_TOKEN` environment variables are defined their value will be used as a replacement for `GIT_CREDENTIALS`.
 
@@ -55,8 +55,8 @@ For GitLab the`GIT_CREDENTIALS` value has to be set with `gitlab-ci-token:<perso
 
 The message for the release commit is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
 
-| Parameter     | Desciption                                                                          |
-| ------------- | ----------------------------------------------------------------------------------- |
+| Parameter     | Description                                                                         |
+|---------------|-------------------------------------------------------------------------------------|
 | `branch`      | The branch from which the release is done.                                          |
 | `lastRelease` | `Object` with `version`, `gitTag` and `gitHead` of the last release.                |
 | `nextRelease` | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done. |
@@ -96,7 +96,7 @@ If a file has a match in `.gitignore` it will always be excluded.
 
 ### Usage
 
-Options can be set within the plugin definition in the `semantic-release` configuration file:
+Options can be set within the plugin definition in the Semantic-release configuration file:
 
 ```json
 {
@@ -117,7 +117,7 @@ Options can be set within the plugin definition in the `semantic-release` config
 When using with the [changelog](https://github.com/semantic-release/changelog), [npm](https://github.com/semantic-release/npm) or [github](https://github.com/semantic-release/github) plugins:
 - The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [git](https://github.com/semantic-release/git) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
 - The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
-- The [github](https://github.com/semantic-release/github) plugin must be called last to create a [Github Release](https://help.github.com/articles/about-releases/) that reference the tag created by the [git](https://github.com/semantic-release/git) plugin.
+- The [github](https://github.com/semantic-release/github) plugin must be called last to create a [GitHub Release](https://help.github.com/articles/about-releases/) that reference the tag created by the [git](https://github.com/semantic-release/git) plugin.
 
 To use with the [changelog](https://github.com/semantic-release/changelog), [github](https://github.com/semantic-release/github) and [npm](https://github.com/semantic-release/npm) plugins:
 
@@ -145,7 +145,7 @@ To use with [github](https://github.com/semantic-release/github):
 
 ### GPG signature
 
-Using GPG, you can [sign and verify tags and commits](https://git-scm.com/book/id/v2/Git-Tools-Signing-Your-Work). With GPG keys, the release tags and commits made by `semantic-release` are verified and other people can trust that they were really were made by your account.
+Using GPG, you can [sign and verify tags and commits](https://git-scm.com/book/id/v2/Git-Tools-Signing-Your-Work). With GPG keys, the release tags and commits made by Semantic-release are verified and other people can trust that they were really were made by your account.
 
 #### Generate the GPG keys
 
@@ -185,9 +185,9 @@ Copy your GPG key, beginning with -----BEGIN PGP PUBLIC KEY BLOCK----- and endin
 
 #### Add the GPG key to your Git hosted account
 
-##### Add the GPG key to Github
+##### Add the GPG key to GitHub
 
-In Github **Settings**, click on **SSH and GPG keys** in the sidebar, then on the **New GPG Key** button.
+In GitHub **Settings**, click on **SSH and GPG keys** in the sidebar, then on the **New GPG Key** button.
 
 Paste the entire GPG key export previously and click the **Add GPG Key** button.
 
@@ -196,7 +196,7 @@ See [Adding a new GPG key to your GitHub account](https://help.github.com/articl
 ### Use the GPG key to sign commit and tags locally
 
 If you want to use this GPG to also sign the commits and tags you create on your local machine you can follow the instruction at [Git Tools - Signing Your Work](https://git-scm.com/book/id/v2/Git-Tools-Signing-Your-Work)
-This step is optionnal and unrelated to `semantic-release`.
+This step is optional and unrelated to Semantic-release.
 
 #### Add the GPG keys to your CI environment
 
@@ -219,7 +219,7 @@ $ travis login
 Add the following [environment](https://github.com/travis-ci/travis.rb#env) variables to Travis:
 - `GPG_PASSPHRASE` to Travis with the value set during the [GPG keys generation](#generate-the-gpg-keys) step
 - `GPG_KEY_ID` to Travis with the value of your GPG key ID retrieved during the [GPG keys generation](#generate-the-gpg-keys) (replace XXXXXXXXXXXXXXXX with your key ID)
-- `GIT_EMAIL` with the email adress you set during the [GPG keys generation](#generate-the-gpg-keys) step
+- `GIT_EMAIL` with the email address you set during the [GPG keys generation](#generate-the-gpg-keys) step
 - `GIT_USERNAME` with the name you set during the [GPG keys generation](#generate-the-gpg-keys) step
 
 ```bash
@@ -279,7 +279,7 @@ $ git push
 
 ### Set up the SSH keys
 
-In order to allows `semantic-release` to push commits to your repository from the CI, you need to geneate a SSH key, add it to your Git hosted account, make it available on the CI environment.
+In order to allows Semantic-release to push commits to your repository from the CI, you need to geneate a SSH key, add it to your Git hosted account, make it available on the CI environment.
 
 #### Generate the SSH keys
 
@@ -295,11 +295,11 @@ This will generate a public key in `git_deploy_key.pub` and a private key in `gi
 
 #### Add the SSH key to your Git hosted account
 
-##### Add the SSH key to Github
+##### Add the SSH key to GitHub
 
 Open the `git_deploy_key.pub` file (public key) and copy the entire content.
 
-In Github **Settings**, click on **SSH and GPG keys** in the sidebar, then on the **New SSH Key** button.
+In GitHub **Settings**, click on **SSH and GPG keys** in the sidebar, then on the **New SSH Key** button.
 
 Paste the entire content of `git_deploy_key.pub` file (public key) and click the **Add SSH Key** button.
 
