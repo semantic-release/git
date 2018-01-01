@@ -34,6 +34,8 @@ Using the `GIT_CREDENTIALS` environment variable is the recommended configuratio
 
 If the `GH_TOKEN` or `GITHUB_TOKEN` environment variables are defined their value will be used as a replacement for `GIT_CREDENTIALS`.
 
+For GitLab the`GIT_CREDENTIALS` value has to be set with `gitlab-ci-token:<personal_access_tokens>`.
+
 ### Environment variables
 
 | Variable          | Description                                                                                                                                 | Default                                             |
