@@ -315,6 +315,11 @@ See [Adding a new SSH key to your GitHub account](https://help.github.com/articl
 
 Make the private key available on the CI environment. Encrypt the key, commit it to your repository and configure the CI environment to decrypt it.
 
+Step by step instructions are provided for the following environments:
+
+* [Travis CI](#add-the-ssh-private-key-to-travis-ci)
+* [Circle CI](#add-the-ssh-private-key-to-circle-ci)
+
 ##### Add the SSH private key to Travis CI
 
 Install the [Travis CLI](https://github.com/travis-ci/travis.rb#installation):
@@ -372,5 +377,77 @@ Commit the encrypted private key and the `.travis.yml` file to your repository:
 ```bash
 $ git add git_deploy_key.enc .travis.yml
 $ git commit -m "ci(travis): Add the encrypted private ssh key"
+$ git push
+```
+
+##### Add the SSH private key to Circle CI
+
+First we encrypt the `git_deploy_key` (private key) using a symmetric encryption (AES-256).  Run the folllowing `openssl` command and *make sure to note the output which we'll need later*:
+
+```bash
+$ openssl aes-256-cbc -e -p -in git_deploy_key -out git_deploy_key.enc -K `openssl rand -hex 32` -iv `openssl rand -hex 16`
+salt=711624E085AB48A4
+key=BB44596FDC00CD2B270BF43B3968BC072AEF026EF4A3C870F874449DA15A5295
+iv =B341F7EBC34D8CF51C4237F39F84FF0D
+```
+
+Open `https://circleci.com/gh/GITHUB_NAME/PROJECT_NAME/edit#env-vars` in your browser, **OR**, login to [CircleCI](https://circleci.com/), choose *PROJECTS* from the left sidebar and click on the *SETTINGS* cog button for your project.  Then on the project sidebar, under *BUILD SETTINGS*, choose *ENVIRONMENT VARIABLES*.  **On that page**, click *ADD VARIABLE* and add `SSH_PASSPHRASE` with the value set during the [SSH keys generation](#generate-the-ssh-keys) step:
+
+```
+  Name:   SSH_PASSPHRASE
+  Value:  <ssh_passphrase>
+```
+
+Now add the following two variable names using the respective outputs (`key` and `iv`) from `openssl` earlier:
+
+```
+  Name:   REPO_ENC_KEY
+  Value:  BB44596FDC00CD2B270BF43B3968BC072AEF026EF4A3C870F874449DA15A5295
+
+  Name:   REPO_ENC_IV
+  Value:  B341F7EBC34D8CF51C4237F39F84FF0D
+```
+
+Adapt your `.circleci/config.yml` (API v2.0) as follows, in the `steps` section before `run: npm run semantic-release`:
+
+```yaml
+version: 2
+jobs:
+  coverage_test_publish:
+    # docker, working_dir, etc
+    steps:
+      # checkout, restore_cache, run: yarn install, save_cache, etc.
+
+      - run:
+          name: Setup SSH with decrypted deploy key
+          command: |
+            # Decrypt the git_deploy_key.enc key into /tmp/git_deploy_key
+            openssl aes-256-cbc -d -K $REPO_ENC_KEY -iv $REPO_ENC_IV -in git_deploy_key.enc -out /tmp/git_deploy_key
+            # Make sure only the current user can read the private key
+            chmod 600 /tmp/git_deploy_key
+            # Create a script to return the passphrase environment variable to ssh-add
+            echo 'echo ${SSH_PASSPHRASE}' > /tmp/askpass && chmod +x /tmp/askpass
+            # Start the authentication agent
+            eval "$(ssh-agent -s)"
+            # Add the key to the authentication agent
+            DISPLAY=":0.0" SSH_ASKPASS="/tmp/askpass" setsid ssh-add /tmp/git_deploy_key </dev/null
+
+      # Run semantic-release after all the above is set.
+      - run: npm run semantic-release
+```
+
+Note that we encrypt the key to `/tmp` to avoid commit / modify / delete the unencrypted key by mistake on the CI.
+
+Delete the local private key as it won't be used anymore:
+
+```bash
+$ rm git_deploy_key
+```
+
+Commit the encrypted private key and the `.circleci/config.yml` file to your repository:
+
+```bash
+$ git add git_deploy_key.enc .circleci/config.yml
+$ git commit -m "ci(cicle): Add the encrypted private ssh key"
 $ git push
 ```
