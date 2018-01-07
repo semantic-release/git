@@ -386,27 +386,16 @@ First we encrypt the `git_deploy_key` (private key) using a symmetric encryption
 
 ```bash
 $ openssl aes-256-cbc -e -p -in git_deploy_key -out git_deploy_key.enc -K `openssl rand -hex 32` -iv `openssl rand -hex 16`
-salt=711624E085AB48A4
-key=BB44596FDC00CD2B270BF43B3968BC072AEF026EF4A3C870F874449DA15A5295
-iv =B341F7EBC34D8CF51C4237F39F84FF0D
+salt=SSSSSSSSSSSSSSSS
+key=KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+iv =VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 ```
 
-Open `https://circleci.com/gh/GITHUB_NAME/PROJECT_NAME/edit#env-vars` in your browser, **OR**, login to [CircleCI](https://circleci.com/), choose *PROJECTS* from the left sidebar and click on the *SETTINGS* cog button for your project.  Then on the project sidebar, under *BUILD SETTINGS*, choose *ENVIRONMENT VARIABLES*.  **On that page**, click *ADD VARIABLE* and add `SSH_PASSPHRASE` with the value set during the [SSH keys generation](#generate-the-ssh-keys) step:
+Add the following [environment variables](https://circleci.com/docs/2.0/env-vars/#adding-environment-variables-in-the-app) to Circle CI:
 
-```
-  Name:   SSH_PASSPHRASE
-  Value:  <ssh_passphrase>
-```
-
-Now add the following two variable names using the respective outputs (`key` and `iv`) from `openssl` earlier:
-
-```
-  Name:   REPO_ENC_KEY
-  Value:  BB44596FDC00CD2B270BF43B3968BC072AEF026EF4A3C870F874449DA15A5295
-
-  Name:   REPO_ENC_IV
-  Value:  B341F7EBC34D8CF51C4237F39F84FF0D
-```
+* `SSL_PASSPHRASE` - the value set during the [SSH keys generation](#generate-the-ssh-keys) step.
+* `REPO_ENC_KEY` - the `key` (KKK) value from the `openssl` step above.
+* `REPO_ENC_IV` - the `iv` (VVV) value from the `openssl` step above.
 
 Adapt your `.circleci/config.yml` (API v2.0) as follows, in the `steps` section before `run: npm run semantic-release`:
 
