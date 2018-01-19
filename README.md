@@ -163,7 +163,7 @@ At the prompt select the `RSA and RSA` king of key, enter `4096` for the keysize
 
 #### Get the GPG keys ID and the public key content
 
-Use `Use the gpg --list-secret-keys --keyid-format LONG command to list GPG keys` to list your GPG keys and from the list, copy the GPG key ID you just created.
+Use the `gpg --list-secret-keys --keyid-format LONG` command to list your GPG keys. From the list, copy the GPG key ID you just created.
 
 ```bash
 $ gpg --list-secret-keys --keyid-format LONG
@@ -251,6 +251,8 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_AAAAAAAAAAAA_key -iv $encrypted_BBBBBBBBBBBB_iv -in git_gpg_keys.asc.enc -out /tmp/git_gpg_keys.asc -d
   # Make sure only the current user can read the keys
   - chmod 600 /tmp/git_gpg_keys.asc
+  # Import the gpg key
+  - gpg --batch --yes --import /tmp/git_gpg_keys.asc
   # Create a script that pass the passphrase to the gpg CLI called by git
   - echo '/usr/bin/gpg2 --passphrase ${GPG_PASSPHRASE} --batch --no-tty "$@"' > /tmp/gpg-with-passphrase && chmod +x /tmp/gpg-with-passphrase
   # Configure git to use the script that passes the passphrase
@@ -317,8 +319,8 @@ Make the private key available on the CI environment. Encrypt the key, commit it
 
 Step by step instructions are provided for the following environments:
 
-* [Travis CI](#add-the-ssh-private-key-to-travis-ci)
-* [Circle CI](#add-the-ssh-private-key-to-circle-ci)
+- [Travis CI](#add-the-ssh-private-key-to-travis-ci)
+- [Circle CI](#add-the-ssh-private-key-to-circle-ci)
 
 ##### Add the SSH private key to Travis CI
 
@@ -393,9 +395,9 @@ iv =VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 Add the following [environment variables](https://circleci.com/docs/2.0/env-vars/#adding-environment-variables-in-the-app) to Circle CI:
 
-* `SSL_PASSPHRASE` - the value set during the [SSH keys generation](#generate-the-ssh-keys) step.
-* `REPO_ENC_KEY` - the `key` (KKK) value from the `openssl` step above.
-* `REPO_ENC_IV` - the `iv` (VVV) value from the `openssl` step above.
+- `SSL_PASSPHRASE` - the value set during the [SSH keys generation](#generate-the-ssh-keys) step.
+- `REPO_ENC_KEY` - the `key` (KKK) value from the `openssl` step above.
+- `REPO_ENC_IV` - the `iv` (VVV) value from the `openssl` step above.
 
 Adapt your `.circleci/config.yml` (API v2.0) as follows, in the `steps` section before `run: npm run semantic-release`:
 
