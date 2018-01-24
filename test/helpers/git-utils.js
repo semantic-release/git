@@ -1,6 +1,7 @@
 import tempy from 'tempy';
 import execa from 'execa';
 import fileUrl from 'file-url';
+import pReduce from 'p-reduce';
 import gitLogParser from 'git-log-parser';
 import getStream from 'get-stream';
 
@@ -44,21 +45,29 @@ export async function initBareRepo(origin, branch = 'master') {
   await execa('git', ['clone', '--no-hardlinks', origin, clone]);
   process.chdir(clone);
   await gitCheckout(branch);
-  await gitCommit('Initial commit');
+  await gitCommits(['Initial commit']);
   await execa('git', ['push', origin, branch]);
 }
 
 /**
- * Create commit on the current git repository.
+ * Create commits on the current git repository.
  *
- * @param {String} message commit message.
+ * @param {Array<string>} messages commit messages.
  *
- * @returns {Commit} The created commits.
+ * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
  */
-export async function gitCommit(message) {
-  const {stdout} = await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign']);
-  const [, branch, hash] = /^\[(\w+)\(?.*?\)?(\w+)\] .+(?:\n|$)/.exec(stdout);
-  return {branch, hash, message};
+export async function gitCommits(messages) {
+  await pReduce(
+    messages,
+    async (commits, msg) => {
+      const stdout = await execa.stdout('git', ['commit', '-m', msg, '--allow-empty', '--no-gpg-sign']);
+      const [, hash] = /^\[(?:\w+)\(?.*?\)?(\w+)\] .+(?:\n|$)/.exec(stdout);
+      commits.push(hash);
+      return commits;
+    },
+    []
+  );
+  return (await gitGetCommits()).slice(0, messages.length);
 }
 
 /**
@@ -110,17 +119,6 @@ export async function gitGetConfig(name) {
 }
 
 /**
- * Get the tag associated with a commit sha.
- *
- * @param {String} gitHead The commit sha for which to retrieve the associated tag.
- *
- * @return {String} The tag associatedwith the sha in parameter or `null`.
- */
-export async function gitCommitTag(gitHead) {
-  return execa.stdout('git', ['describe', '--tags', '--exact-match', gitHead]);
-}
-
-/**
  * @return {Array<String>} Array of staged files path.
  */
 export async function gitStaged() {
@@ -128,20 +126,6 @@ export async function gitStaged() {
     .split('\n')
     .filter(status => status.startsWith('A '))
     .map(status => status.match(/^A\s+(.+)$/)[1]);
-}
-
-/**
- * Get the first commit sha referenced by the tag `tagName`.
- *
- * @param {String} origin The repository remote URL.
- * @param {String} tagName The tag name to seach for.
- * @return {String} The sha of the commit associated with `tagName` on the remote repository.
- */
-export async function gitRemoteTagHead(origin, tagName) {
-  return (await execa.stdout('git', ['ls-remote', '--tags', origin, tagName]))
-    .split('\n')
-    .filter(tag => Boolean(tag))
-    .map(tag => tag.match(/^(\S+)/)[1])[0];
 }
 
 /**
@@ -162,7 +146,7 @@ export async function gitCommitedFiles(ref = 'HEAD') {
  * @param {String} [from] Git reference from which to seach commits.
  * @return {Array<Object>} The list of parsed commits.
  */
-export async function gitGetCommit(from) {
+export async function gitGetCommits(from) {
   Object.assign(gitLogParser.fields, {hash: 'H', message: 'B', gitTags: 'd', committerDate: {key: 'ci', type: Date}});
   return (await getStream.array(gitLogParser.parse({_: `${from ? from + '..' : ''}HEAD`}))).map(commit => {
     commit.message = commit.message.trim();
@@ -187,4 +171,17 @@ export async function gitDetachedHead(origin, head) {
   await execa('git', ['fetch']);
   await execa('git', ['checkout', head]);
   return dir;
+}
+
+/**
+ * Get the head commit sha on the remote repository.
+ *
+ * @param {String} origin The repository remote URL.
+ * @return {String} The sha of the commit associated with `tagName` on the remote repository.
+ */
+export async function gitRemoteHead(origin) {
+  return (await execa.stdout('git', ['ls-remote', origin, 'HEAD']))
+    .split('\n')
+    .filter(tag => Boolean(tag))
+    .map(tag => tag.match(/^(\S+)/)[1])[0];
 }

@@ -1,17 +1,7 @@
 import test from 'ava';
 import {outputFile, appendFile} from 'fs-extra';
-import tempy from 'tempy';
-import {unshallow, gitTags, add, getModifiedFiles, config, commit, tag, gitHead, deleteHeadTag, push} from '../lib/git';
-import {
-  gitRepo,
-  gitCommit,
-  gitShallowClone,
-  gitGetCommit,
-  gitGetConfig,
-  gitCommitTag,
-  gitStaged,
-  gitRemoteTagHead,
-} from './helpers/git-utils';
+import {add, getModifiedFiles, config, commit, gitHead, push} from '../lib/git';
+import {gitRepo, gitCommits, gitGetCommits, gitGetConfig, gitStaged, gitRemoteHead} from './helpers/git-utils';
 
 // Save the current working diretory
 const cwd = process.cwd();
@@ -19,39 +9,6 @@ const cwd = process.cwd();
 test.afterEach.always(() => {
   // Restore the current working directory
   process.chdir(cwd);
-});
-
-test.serial('Unshallow repository', async t => {
-  // Create a git repository, set the current working directory at the root of the repo
-  const repo = await gitRepo();
-  // Add commits to the master branch
-  await gitCommit('First');
-  await gitCommit('Second');
-  // Create a shallow clone with only 1 commit
-  await gitShallowClone(repo);
-
-  // Verify the shallow clone contains only one commit
-  t.is((await gitGetCommit('')).length, 1);
-
-  await unshallow();
-
-  // Verify the shallow clone contains all the commits
-  t.is((await gitGetCommit('')).length, 2);
-});
-
-test.serial('Do not throw error when unshallow a complete repository', async t => {
-  // Create a git repository, set the current working directory at the root of the repo
-  await gitRepo();
-  // Add commits to the master branch
-  await gitCommit('First');
-  await t.notThrows(unshallow());
-});
-
-test.serial('Throws error if obtaining the tags fails', async t => {
-  const dir = tempy.directory();
-  process.chdir(dir);
-
-  await t.throws(gitTags());
 });
 
 test.serial('Add file to index', async t => {
@@ -111,28 +68,18 @@ test.serial('Commit added files', async t => {
   await add(['.']);
   await commit('Test commit');
 
-  await t.true((await gitGetCommit('')).length === 1);
-});
-
-test.serial('Add tag on head commit', async t => {
-  // Create a git repository, set the current working directory at the root of the repo
-  await gitRepo();
-  const {hash} = await gitCommit('Test commit');
-
-  await tag('tag_name');
-
-  await t.is(await gitCommitTag(hash), 'tag_name');
+  await t.true((await gitGetCommits()).length === 1);
 });
 
 test.serial('Get the last commit sha', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   await gitRepo();
   // Add commits to the master branch
-  const {hash} = await gitCommit('First');
+  const [{hash}] = await gitCommits(['First']);
 
   const result = await gitHead();
 
-  t.is(result.substring(0, 7), hash);
+  t.is(result, hash);
 });
 
 test.serial('Throw error if the last commit sha cannot be found', async t => {
@@ -142,50 +89,12 @@ test.serial('Throw error if the last commit sha cannot be found', async t => {
   await t.throws(gitHead());
 });
 
-test.serial('Push tag and commit to remote repository', async t => {
+test.serial('Push commit to remote repository', async t => {
   // Create a git repository with a remote, set the current working directory at the root of the repo
   const repo = await gitRepo(true);
-  const {hash} = await gitCommit('Test commit');
-  await tag('tag_name');
+  const [{hash}] = await gitCommits(['Test commit']);
 
   await push(repo, 'master');
 
-  t.is((await gitRemoteTagHead(repo, 'tag_name')).substring(0, 7), hash);
-});
-
-test.serial('Delete local and remote tag if they reference the local HEAD', async t => {
-  // Create a git repository with a remote, set the current working directory at the root of the repo
-  const repo = await gitRepo(true);
-  await gitCommit('Test commit');
-  await tag('tag_name');
-  await push(repo, 'master');
-
-  await deleteHeadTag(repo, 'tag_name');
-
-  t.deepEqual(await gitTags(), []);
-  t.falsy(await gitRemoteTagHead(repo, 'tag_name'));
-});
-
-test.serial('Do not throw error if the tag to delete does not exists', async t => {
-  // Create a git repository with a remote, set the current working directory at the root of the repo
-  const repo = await gitRepo(true);
-  await gitCommit('Test commit');
-
-  await t.notThrows(deleteHeadTag(repo, 'tag_name'));
-  t.deepEqual(await gitTags(), []);
-  t.falsy(await gitRemoteTagHead(repo, 'tag_name'));
-});
-
-test.serial('Throw a SemanticReleaseError if the tag to delete exists and reference a different sha', async t => {
-  // Create a git repository with a remote, set the current working directory at the root of the repo
-  const repo = await gitRepo(true);
-  await gitCommit('Commit with tag');
-  await tag('tag_name');
-  await gitCommit('Commit without tag');
-  await push(repo, 'master');
-
-  const error = await t.throws(deleteHeadTag(repo, 'tag_name'));
-
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EGITTAGEXIST');
+  t.is(await gitRemoteHead(repo), hash);
 });

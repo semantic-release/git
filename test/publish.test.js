@@ -2,7 +2,7 @@ import test from 'ava';
 import {outputFile} from 'fs-extra';
 import {stub} from 'sinon';
 import publish from '../lib/publish';
-import {gitRepo, gitGetCommit, gitRemoteTagHead, gitCommitedFiles} from './helpers/git-utils';
+import {gitRepo, gitGetCommits, gitCommitedFiles} from './helpers/git-utils';
 
 // Save the current process.env
 const envBackup = Object.assign({}, process.env);
@@ -43,14 +43,13 @@ test.serial(
     await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
     // Verify the remote repo has a the version referencing the same commit sha at the local head
-    const commit = (await gitGetCommit())[0];
-    t.is(await gitRemoteTagHead(t.context.repositoryUrl, nextRelease.gitTag), commit.hash);
+    const [commit] = await gitGetCommits();
     // Verify the files that have been commited
     t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package-lock.json', 'package.json']);
 
     t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
     t.is(commit.body, `${nextRelease.notes}\n`);
-    t.is(commit.gitTags, `(HEAD -> ${t.context.branch}, tag: ${nextRelease.gitTag})`);
+    t.is(commit.gitTags, `(HEAD -> ${t.context.branch})`);
 
     t.is(commit.author.name, 'semantic-release-bot');
     t.is(commit.author.email, 'semantic-release-bot@martynus.net');
@@ -101,7 +100,7 @@ Last release: \${lastRelease.version}
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md']);
   // Verify the commit message contains on the new release notes
-  const commit = (await gitGetCommit())[0];
+  const [commit] = await gitGetCommits();
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${t.context.branch}`);
   t.is(commit.body, `Last release: ${lastRelease.version}\n${nextRelease.notes}\n`);
 });
@@ -213,9 +212,6 @@ test.serial('Skip commit if there is no files to commit', async t => {
 
   await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
-  // Verify the remote repo has a the version referencing the same commit sha at the local head
-  const commit = (await gitGetCommit())[0];
-  t.is(await gitRemoteTagHead(t.context.repositoryUrl, nextRelease.gitTag), commit.hash);
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), []);
   t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
@@ -232,9 +228,6 @@ test.serial('Skip commit if all the modified files are in .gitignore', async t =
 
   await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
-  // Verify the remote repo has a the version referencing the same commit sha at the local head
-  const commit = (await gitGetCommit())[0];
-  t.is(await gitRemoteTagHead(t.context.repositoryUrl, nextRelease.gitTag), commit.hash);
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), []);
   t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);

@@ -1,6 +1,5 @@
 const {castArray} = require('lodash');
 const verifyGit = require('./lib/verify');
-const getLastReleaseGit = require('./lib/get-last-release');
 const publishGit = require('./lib/publish');
 
 let verified;
@@ -22,14 +21,6 @@ async function verifyConditions(pluginConfig, {options, logger}) {
   verified = true;
 }
 
-async function getLastRelease(pluginConfig, {options, logger}) {
-  if (!verified) {
-    await verifyGit(pluginConfig, options, logger);
-    verified = true;
-  }
-  return getLastReleaseGit(logger);
-}
-
 async function publish(pluginConfig, {options, lastRelease, nextRelease, logger}) {
   if (!verified) {
     await verifyGit(pluginConfig, options, logger);
@@ -38,4 +29,4 @@ async function publish(pluginConfig, {options, lastRelease, nextRelease, logger}
   await publishGit(pluginConfig, options, lastRelease, nextRelease, logger);
 }
 
-module.exports = {verifyConditions, getLastRelease, publish};
+module.exports = {verifyConditions, publish};
