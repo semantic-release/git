@@ -29,7 +29,7 @@ test.afterEach.always(() => {
 });
 
 test.serial(
-  'Commit CHANGELOG.md, package.json and npm-shrinkwrap.json if they exists and have been changed',
+  'Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if they exists and have been changed',
   async t => {
     const pluginConfig = {};
     const lastRelease = {};
@@ -37,6 +37,7 @@ test.serial(
 
     await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
     await outputFile('package.json', "{name: 'test-package'}");
+    await outputFile('package-lock.json', "{name: 'test-package'}");
     await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
 
     await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
@@ -45,7 +46,7 @@ test.serial(
     const commit = (await gitGetCommit())[0];
     t.is(await gitRemoteTagHead(t.context.repositoryUrl, nextRelease.gitTag), commit.hash);
     // Verify the files that have been commited
-    t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package.json']);
+    t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package-lock.json', 'package.json']);
 
     t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
     t.is(commit.body, `${nextRelease.notes}\n`);
@@ -56,28 +57,33 @@ test.serial(
 
     t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'CHANGELOG.md']);
     t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'package.json']);
-    t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
-    t.deepEqual(t.context.log.args[3], ['Found %d file(s) to commit', 3]);
-    t.deepEqual(t.context.log.args[4], ['Creating tag %s', nextRelease.gitTag]);
-    t.deepEqual(t.context.log.args[5], ['Published Git release: %s', nextRelease.gitTag]);
+    t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'package-lock.json']);
+    t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
+    t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
+    t.deepEqual(t.context.log.args[5], ['Creating tag %s', nextRelease.gitTag]);
+    t.deepEqual(t.context.log.args[6], ['Published Git release: %s', nextRelease.gitTag]);
   }
 );
 
-test.serial('Exclude CHANGELOG.md, package.json and npm-shrinkwrap.json if "assets" is defined without it', async t => {
-  const pluginConfig = {assets: []};
-  const lastRelease = {};
-  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-  await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
-  await outputFile('package.json', "{name: 'test-package'}");
-  await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
+test.serial(
+  'Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it',
+  async t => {
+    const pluginConfig = {assets: []};
+    const lastRelease = {};
+    const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+    await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
+    await outputFile('package.json', "{name: 'test-package'}");
+    await outputFile('package-lock.json', "{name: 'test-package'}");
+    await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+    await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
 
-  // Verify no files have been commited
-  t.deepEqual(await gitCommitedFiles(), []);
-  t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-  t.deepEqual(t.context.log.args[1], ['Published Git release: %s', nextRelease.gitTag]);
-});
+    // Verify no files have been commited
+    t.deepEqual(await gitCommitedFiles(), []);
+    t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
+    t.deepEqual(t.context.log.args[1], ['Published Git release: %s', nextRelease.gitTag]);
+  }
+);
 
 test.serial('Allow to customize the commit message', async t => {
   const pluginConfig = {
