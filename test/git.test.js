@@ -153,16 +153,6 @@ test.serial('Push tag and commit to remote repository', async t => {
   t.is((await gitRemoteTagHead(repo, 'tag_name')).substring(0, 7), hash);
 });
 
-test.serial('If push fails returns and Error without reference to the repository URL', async t => {
-  // Create a git repository with a remote, set the current working directory at the root of the repo
-  await gitRepo(true);
-  await gitCommit('Test commit');
-  await tag('tag_name');
-
-  const error = await t.throws(push('http://wrongurl.com/repo.git', 'master'), Error);
-  t.is(error.message, 'An error occured during the git push to the remote branch master');
-});
-
 test.serial('Delete local and remote tag if they reference the local HEAD', async t => {
   // Create a git repository with a remote, set the current working directory at the root of the repo
   const repo = await gitRepo(true);
