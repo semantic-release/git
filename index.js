@@ -4,7 +4,8 @@ const publishGit = require('./lib/publish');
 
 let verified;
 
-async function verifyConditions(pluginConfig, {options, logger}) {
+async function verifyConditions(pluginConfig, context) {
+  const {options} = context;
   // If the Git publish plugin is used and has `assets` or `message` configured, validate them now in order to prevent any release if the configuration is wrong
   if (options.publish) {
     const publishPlugin =
@@ -13,16 +14,16 @@ async function verifyConditions(pluginConfig, {options, logger}) {
     pluginConfig.assets = pluginConfig.assets || publishPlugin.assets;
     pluginConfig.message = pluginConfig.message || publishPlugin.message;
   }
-  await verifyGit(pluginConfig, options, logger);
+  await verifyGit(pluginConfig);
   verified = true;
 }
 
-async function publish(pluginConfig, {options, lastRelease, nextRelease, logger}) {
+async function publish(pluginConfig, context) {
   if (!verified) {
-    await verifyGit(pluginConfig, options, logger);
+    await verifyGit(pluginConfig);
     verified = true;
   }
-  await publishGit(pluginConfig, options, lastRelease, nextRelease, logger);
+  await publishGit(pluginConfig, context);
 }
 
 module.exports = {verifyConditions, publish};
