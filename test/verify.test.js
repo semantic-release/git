@@ -29,7 +29,7 @@ test.afterEach.always(() => {
 
 test('Throw SemanticReleaseError if "assets" option is not a String or false or an Array of Objects', async t => {
   const assets = true;
-  const error = await t.throws(verify({assets}, {}, t.context.logger));
+  const [error] = await t.throws(verify({assets}, {}, t.context.logger));
 
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDASSETS');
@@ -37,7 +37,7 @@ test('Throw SemanticReleaseError if "assets" option is not a String or false or 
 
 test('Throw SemanticReleaseError if "assets" option is not an Array with invalid elements', async t => {
   const assets = ['file.js', 42];
-  const error = await t.throws(verify({assets}, {}, t.context.logger));
+  const [error] = await t.throws(verify({assets}, {}, t.context.logger));
 
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDASSETS');
@@ -108,7 +108,7 @@ test.serial('Verify "assets" is an Array of Object with a glob Arrays in path pr
 
 test('Throw SemanticReleaseError if "message" option is not a String', async t => {
   const message = 42;
-  const error = await t.throws(verify({message}, {}, t.context.logger));
+  const [error] = await t.throws(verify({message}, {}, t.context.logger));
 
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDMESSAGE');
@@ -116,7 +116,7 @@ test('Throw SemanticReleaseError if "message" option is not a String', async t =
 
 test('Throw SemanticReleaseError if "message" option is an empty String', async t => {
   const message = '';
-  const error = await t.throws(verify({message}, {}, t.context.logger));
+  const [error] = await t.throws(verify({message}, {}, t.context.logger));
 
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDMESSAGE');
@@ -124,7 +124,7 @@ test('Throw SemanticReleaseError if "message" option is an empty String', async 
 
 test('Throw SemanticReleaseError if "message" option is a whitespace String', async t => {
   const message = '  \n \r ';
-  const error = await t.throws(verify({message}, {}, t.context.logger));
+  const [error] = await t.throws(verify({message}, {}, t.context.logger));
 
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDMESSAGE');

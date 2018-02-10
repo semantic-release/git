@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "@semantic-release/error": "^2.1.0",
+    "aggregate-error": "^1.0.0",
     "debug": "^3.1.0",
     "dir-glob": "^2.0.0",
     "execa": "^0.9.0",
@@ -76,7 +77,7 @@
     "all": true
   },
   "peerDependencies": {
-    "semantic-release": "13.x.x"
+    "semantic-release": ">=13.3.0 <14.0.0"
   },
   "prettier": {
     "printWidth": 120,
