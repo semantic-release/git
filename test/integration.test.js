@@ -106,36 +106,35 @@ test.serial('Verify authentication only on the fist call', async t => {
   const branch = 'master';
   const repositoryUrl = await gitRepo(true);
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  const options = {repositoryUrl, branch, publish: ['@semantic-release/npm']};
 
-  await t.notThrows(t.context.m.verifyConditions({}, {logger: t.context.logger, options: {repositoryUrl, branch}}));
+  await t.notThrows(t.context.m.verifyConditions({}, {options, logger: t.context.logger}));
   await t.context.m.publish({}, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 });
 
-test('Throw SemanticReleaseError if publish "assets" option is invalid', async t => {
+test('Throw SemanticReleaseError if publish config is invalid', async t => {
+  const message = 42;
   const assets = true;
-  const error = await t.throws(
-    t.context.m.verifyConditions(
-      {},
-      {options: {publish: ['@semantic-release/npm', {path: '@semantic-release/git', assets}]}, logger: t.context.logger}
-    )
-  );
+  const options = {publish: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets}]};
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDASSETS');
+  const errors = [...(await t.throws(t.context.m.verifyConditions({}, {options, logger: t.context.logger})))];
+
+  t.is(errors[0].name, 'SemanticReleaseError');
+  t.is(errors[0].code, 'EINVALIDASSETS');
+  t.is(errors[1].name, 'SemanticReleaseError');
+  t.is(errors[1].code, 'EINVALIDMESSAGE');
 });
 
-test('Throw SemanticReleaseError if publish "message" option is invalid', async t => {
+test('Throw SemanticReleaseError if config is invalid', async t => {
   const message = 42;
-  const error = await t.throws(
-    t.context.m.verifyConditions(
-      {},
-      {
-        options: {publish: ['@semantic-release/npm', {path: '@semantic-release/git', message}]},
-        logger: t.context.logger,
-      }
-    )
-  );
+  const assets = true;
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDMESSAGE');
+  const errors = [
+    ...(await t.throws(t.context.m.verifyConditions({message, assets}, {options: {}, logger: t.context.logger}))),
+  ];
+
+  t.is(errors[0].name, 'SemanticReleaseError');
+  t.is(errors[0].code, 'EINVALIDASSETS');
+  t.is(errors[1].name, 'SemanticReleaseError');
+  t.is(errors[1].code, 'EINVALIDMESSAGE');
 });
