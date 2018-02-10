@@ -40,7 +40,7 @@ test.serial(
     await outputFile('package-lock.json', "{name: 'test-package'}");
     await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
 
-    await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+    await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
     // Verify the remote repo has a the version referencing the same commit sha at the local head
     const [commit] = await gitGetCommits();
@@ -75,7 +75,7 @@ test.serial(
     await outputFile('package-lock.json', "{name: 'test-package'}");
     await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
 
-    await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+    await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
     // Verify no files have been commited
     t.deepEqual(await gitCommitedFiles(), []);
@@ -95,7 +95,7 @@ Last release: \${lastRelease.version}
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
   await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md']);
@@ -122,7 +122,7 @@ test.serial('Commit files matching the patterns in "assets"', async t => {
   await outputFile('dir2/file6.js', 'Test content');
   await outputFile('dir2/file7.css', 'Test content');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify file2 and file1 have been commited
   // file4.js is excluded as no glob matching
@@ -151,7 +151,7 @@ test.serial('Commit files matching the patterns in "assets" as Objects', async t
   await outputFile('dir2/file6.js', 'Test content');
   await outputFile('dir2/file7.css', 'Test content');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify file2 and file1 have been commited
   // file4.js is excluded as no glob matching
@@ -170,7 +170,7 @@ test.serial('Commit files matching the patterns in "assets" as single glob', asy
   await outputFile('dist/file1.js', 'Test content');
   await outputFile('dist/file2.css', 'Test content');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   t.deepEqual(await gitCommitedFiles(), ['dist/file1.js']);
 
@@ -184,7 +184,7 @@ test.serial('Commit files matching the patterns in "assets", including dot files
 
   await outputFile('dist/.dotfile', 'Test content');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   t.deepEqual(await gitCommitedFiles(), ['dist/.dotfile']);
 
@@ -198,7 +198,7 @@ test.serial('Skip negated pattern if its alone in its group', async t => {
 
   await outputFile('file.js', 'Test content');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   t.deepEqual(await gitCommitedFiles(), ['file.js']);
 
@@ -210,7 +210,7 @@ test.serial('Skip commit if there is no files to commit', async t => {
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), []);
@@ -226,7 +226,7 @@ test.serial('Skip commit if all the modified files are in .gitignore', async t =
   await outputFile('dist/files1.js', 'Test content');
   await outputFile('.gitignore', 'dist/**/*');
 
-  await publish(pluginConfig, t.context.options, lastRelease, nextRelease, t.context.logger);
+  await publish(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles(), []);
