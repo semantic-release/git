@@ -40,7 +40,7 @@ test.afterEach.always(() => {
   process.chdir(cwd);
 });
 
-test.serial('Publish from a shallow clone', async t => {
+test.serial('Prepare from a shallow clone', async t => {
   process.env.GIT_EMAIL = 'user@email.com';
   process.env.GIT_USERNAME = 'user';
   const branch = 'master';
@@ -62,7 +62,7 @@ test.serial('Publish from a shallow clone', async t => {
     message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
     assets: '**/*.{js,json}',
   };
-  await t.context.m.publish(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
+  await t.context.m.prepare(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 
   t.deepEqual(await gitCommitedFiles(), ['dist/file.js', 'package.json']);
   const [commit] = await gitGetCommits();
@@ -73,7 +73,7 @@ test.serial('Publish from a shallow clone', async t => {
   t.is(commit.author.email, process.env.GIT_EMAIL);
 });
 
-test.serial('Publish from a detached head repository', async t => {
+test.serial('Prepare from a detached head repository', async t => {
   const branch = 'master';
   const repositoryUrl = await gitRepo(true);
   await outputFile('package.json', "{name: 'test-package', version: '1.0.0'}");
@@ -93,7 +93,7 @@ test.serial('Publish from a detached head repository', async t => {
     message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
     assets: '**/*.{js,json}',
   };
-  await t.context.m.publish(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
+  await t.context.m.prepare(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 
   t.deepEqual(await gitCommitedFiles(), ['dist/file.js', 'package.json']);
   const [commit] = await gitGetCommits();
@@ -106,16 +106,16 @@ test.serial('Verify authentication only on the fist call', async t => {
   const branch = 'master';
   const repositoryUrl = await gitRepo(true);
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-  const options = {repositoryUrl, branch, publish: ['@semantic-release/npm']};
+  const options = {repositoryUrl, branch, prepare: ['@semantic-release/npm']};
 
   await t.notThrows(t.context.m.verifyConditions({}, {options, logger: t.context.logger}));
-  await t.context.m.publish({}, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
+  await t.context.m.prepare({}, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 });
 
-test('Throw SemanticReleaseError if publish config is invalid', async t => {
+test('Throw SemanticReleaseError if prepare config is invalid', async t => {
   const message = 42;
   const assets = true;
-  const options = {publish: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets}]};
+  const options = {prepare: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets}]};
 
   const errors = [...(await t.throws(t.context.m.verifyConditions({}, {options, logger: t.context.logger})))];
 

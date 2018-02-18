@@ -1,29 +1,29 @@
 const {castArray} = require('lodash');
 const verifyGit = require('./lib/verify');
-const publishGit = require('./lib/publish');
+const prepareGit = require('./lib/prepare');
 
 let verified;
 
 async function verifyConditions(pluginConfig, context) {
   const {options} = context;
-  // If the Git publish plugin is used and has `assets` or `message` configured, validate them now in order to prevent any release if the configuration is wrong
-  if (options.publish) {
-    const publishPlugin =
-      castArray(options.publish).find(config => config.path && config.path === '@semantic-release/git') || {};
+  // If the Git prepare plugin is used and has `assets` or `message` configured, validate them now in order to prevent any release if the configuration is wrong
+  if (options.prepare) {
+    const preparePlugin =
+      castArray(options.prepare).find(config => config.path && config.path === '@semantic-release/git') || {};
 
-    pluginConfig.assets = pluginConfig.assets || publishPlugin.assets;
-    pluginConfig.message = pluginConfig.message || publishPlugin.message;
+    pluginConfig.assets = pluginConfig.assets || preparePlugin.assets;
+    pluginConfig.message = pluginConfig.message || preparePlugin.message;
   }
   await verifyGit(pluginConfig);
   verified = true;
 }
 
-async function publish(pluginConfig, context) {
+async function prepare(pluginConfig, context) {
   if (!verified) {
     await verifyGit(pluginConfig);
     verified = true;
   }
-  await publishGit(pluginConfig, context);
+  await prepareGit(pluginConfig, context);
 }
 
-module.exports = {verifyConditions, publish};
+module.exports = {verifyConditions, prepare};

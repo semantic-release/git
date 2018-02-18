@@ -13,9 +13,9 @@ Set of [Semantic-release](https://github.com/semantic-release/semantic-release) 
 
 Verify the access to the remote Git repository, the commit `message` format and the `assets` option configuration.
 
-## publish
+## prepare
 
-Publish a release commit, including configurable files.
+Create a release commit, including configurable files.
 
 ## Configuration
 
@@ -83,42 +83,30 @@ Options can be set within the plugin definition in the Semantic-release configur
 ```json
 {
   "release": {
-    "publish": [
+    "prepare": [
       "@semantic-release/npm",
       {
         "path": "@semantic-release/git",
         "assets": ["package.json", "dist/**/*.{js|css}", "docs"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-      },
-      "@semantic-release/github"
-    ]
+      }
+    ],
+    "publish": ["@semantic-release/github"]
   }
 }
 ```
 
-When using with the [changelog](https://github.com/semantic-release/changelog), [npm](https://github.com/semantic-release/npm) or [github](https://github.com/semantic-release/github) plugins:
+When using with the [changelog](https://github.com/semantic-release/changelog) or [npm](https://github.com/semantic-release/npm) plugins:
 - The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [git](https://github.com/semantic-release/git) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
 - The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
-- The [github](https://github.com/semantic-release/github) plugin must be called last to create a [GitHub Release](https://help.github.com/articles/about-releases/) that reference the tag created by the [git](https://github.com/semantic-release/git) plugin.
 
-To use with the [changelog](https://github.com/semantic-release/changelog), [github](https://github.com/semantic-release/github) and [npm](https://github.com/semantic-release/npm) plugins:
-
-```json
-{
-  "release": {
-    "verifyConditions": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"],
-    "publish": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git", "@semantic-release/github"]
-  }
-}
-```
-
-To use with [github](https://github.com/semantic-release/github):
+To use with the [changelog](https://github.com/semantic-release/changelog) and [npm](https://github.com/semantic-release/npm) plugins:
 
 ```json
 {
   "release": {
-    "verifyConditions": ["@semantic-release/git", "@semantic-release/github"],
-    "publish": ["@semantic-release/git", "@semantic-release/github"]
+    "verifyConditions": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git"],
+    "prepare": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git"]
   }
 }
 ```
