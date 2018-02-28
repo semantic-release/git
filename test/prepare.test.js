@@ -59,8 +59,13 @@ test.serial(
     t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'package-lock.json']);
     t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
     t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
-    t.deepEqual(t.context.log.args[5], ['Creating tag %s', nextRelease.gitTag]);
-    t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
+    t.deepEqual(t.context.log.args[5], [
+      'Setting git config to %s user.email and %s user.name',
+      commit.author.email,
+      commit.author.name,
+    ]);
+    t.deepEqual(t.context.log.args[6], ['Creating tag %s', nextRelease.gitTag]);
+    t.deepEqual(t.context.log.args[7], ['Prepared Git release: %s', nextRelease.gitTag]);
   }
 );
 
