@@ -23,8 +23,10 @@ test.beforeEach(t => {
   delete process.env.GH_TOKEN;
   delete process.env.GITHUB_TOKEN;
   delete process.env.GIT_CREDENTIALS;
-  delete process.env.GIT_EMAIL;
-  delete process.env.GIT_USERNAME;
+  delete process.env.GIT_AUTHOR_NAME;
+  delete process.env.GIT_AUTHOR_EMAIL;
+  delete process.env.GIT_COMMITTER_NAME;
+  delete process.env.GIT_COMMITTER_EMAIL;
   // Clear npm cache to refresh the module state
   clearModule('..');
   t.context.m = require('..');
@@ -41,8 +43,10 @@ test.afterEach.always(() => {
 });
 
 test.serial('Prepare from a shallow clone', async t => {
-  process.env.GIT_EMAIL = 'user@email.com';
-  process.env.GIT_USERNAME = 'user';
+  process.env.GIT_AUTHOR_EMAIL = 'user@email.com';
+  process.env.GIT_AUTHOR_NAME = 'user';
+  process.env.GIT_COMMITTER_EMAIL = process.env.GIT_AUTHOR_EMAIL;
+  process.env.GIT_COMMITTER_NAME = process.env.GIT_AUTHOR_NAME;
   const branch = 'master';
   const repositoryUrl = await gitRepo(true);
   await outputFile('package.json', "{name: 'test-package', version: '1.0.0'}");
@@ -69,8 +73,8 @@ test.serial('Prepare from a shallow clone', async t => {
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
   t.is(commit.gitTags, `(HEAD -> ${branch})`);
-  t.is(commit.author.name, process.env.GIT_USERNAME);
-  t.is(commit.author.email, process.env.GIT_EMAIL);
+  t.is(commit.author.name, process.env.GIT_AUTHOR_NAME);
+  t.is(commit.author.email, process.env.GIT_AUTHOR_EMAIL);
 });
 
 test.serial('Prepare from a detached head repository', async t => {
@@ -100,6 +104,18 @@ test.serial('Prepare from a detached head repository', async t => {
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
   t.is(commit.gitTags, `(HEAD)`);
+});
+
+test.serial('Shows deprecation warning when using GIT_USERNAME or GIT_EMAIL', async t => {
+  const branch = 'master';
+  const repositoryUrl = await gitRepo(true);
+  await t.context.m.prepare({}, {
+    logger: t.context.logger,
+    options: {repositoryUrl, branch},
+    nextRelease,
+  });
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Version 2.0.0 changelog'};
+  // tbd
 });
 
 test.serial('Verify authentication only on the fist call', async t => {

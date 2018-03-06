@@ -44,10 +44,7 @@
   "engines": {
     "node": ">=8.3"
   },
-  "files": [
-    "lib",
-    "index.js"
-  ],
+  "files": ["lib", "index.js"],
   "homepage": "https://github.com/semantic-release/git#readme",
   "keywords": [
     "changelog",
@@ -62,22 +59,16 @@
   "license": "MIT",
   "main": "index.js",
   "nyc": {
-    "include": [
-      "lib/**/*.js",
-      "index.js"
-    ],
-    "reporter": [
-      "json",
-      "text",
-      "html"
-    ],
+    "include": ["lib/**/*.js", "index.js"],
+    "reporter": ["json", "text", "html"],
     "all": true
   },
   "peerDependencies": {
     "semantic-release": ">=15.0.0 <16.0.0"
   },
   "prettier": {
-    "printWidth": 120
+    "printWidth": 120,
+    "singleQuote": true
   },
   "publishConfig": {
     "access": "public",

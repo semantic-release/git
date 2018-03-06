@@ -13,8 +13,10 @@ test.beforeEach(t => {
   delete process.env.GH_TOKEN;
   delete process.env.git_TOKEN;
   delete process.env.GIT_CREDENTIALS;
-  delete process.env.GIT_EMAIL;
-  delete process.env.GIT_USERNAME;
+  delete process.env.GIT_AUTHOR_NAME;
+  delete process.env.GIT_AUTHOR_EMAIL;
+  delete process.env.GIT_COMMITTER_NAME;
+  delete process.env.GIT_COMMITTER_EMAIL;
   // Stub the logger functions
   t.context.log = stub();
   t.context.logger = {log: t.context.log};
