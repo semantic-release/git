@@ -1,4 +1,4 @@
-const {castArray} = require('lodash');
+const {defaultTo, castArray} = require('lodash');
 const verifyGit = require('./lib/verify');
 const prepareGit = require('./lib/prepare');
 
@@ -11,8 +11,8 @@ async function verifyConditions(pluginConfig, context) {
     const preparePlugin =
       castArray(options.prepare).find(config => config.path && config.path === '@semantic-release/git') || {};
 
-    pluginConfig.assets = pluginConfig.assets || preparePlugin.assets;
-    pluginConfig.message = pluginConfig.message || preparePlugin.message;
+    pluginConfig.assets = defaultTo(pluginConfig.assets, preparePlugin.assets);
+    pluginConfig.message = defaultTo(pluginConfig.message, preparePlugin.message);
   }
   await verifyGit(pluginConfig);
   verified = true;
