@@ -20,7 +20,7 @@
     "aggregate-error": "^1.0.0",
     "debug": "^3.1.0",
     "dir-glob": "^2.0.0",
-    "execa": "^0.9.0",
+    "execa": "^0.10.0",
     "fs-extra": "^5.0.0",
     "lodash": "^4.17.4",
     "micromatch": "^3.1.4",
