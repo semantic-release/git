@@ -21,24 +21,28 @@ Create a release commit, including configurable files.
 
 ### Environment variables
 
-| Variable          | Description                                                                                                                                 | Default                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `GIT_USERNAME`    | [Git username](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity) associated with the release commit.      | @semantic-release-bot.                              |
-| `GIT_EMAIL`       | [Git email address](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity) associated with the release commit. | @semantic-release-bot email address.                |
+You would need to set these Git's [environment variables](https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables#_committing) for defining author and commiter for release commit.
+
+| Variable              | Description        | Default                             |
+| --------------------- | ------------------ | ----------------------------------- |
+| `GIT_AUTHOR_NAME`     | Commit author name | `semantic-release-bot`              |
+| `GIT_AUTHOR_EMAIL`    | Commi author email | `semantic-release-bot@martynus.net` |
+| `GIT_COMMITTER_NAME`  | Commiter name      | `semantic-release-bot`              |
+| `GIT_COMMITTER_EMAIL` | Commiter email     | `semantic-release-bot@martynus.net` |
 
 ### Options
 
-| Options        | Description                                                    | Default                                                                     |
-| -------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `message`      | The message for the release commit. See [message](#message).   | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`  |
-| `assets`       | Files to include in the release commit. See [assets](#assets). | `["package.json", "npm-shrinkwrap.json"]`                                   |
+| Options   | Description                                                    | Default                                                                    |
+| --------- | -------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `message` | The message for the release commit. See [message](#message).   | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}` |
+| `assets`  | Files to include in the release commit. See [assets](#assets). | `["package.json", "npm-shrinkwrap.json"]`                                  |
 
 #### `message`
 
 The message for the release commit is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
 
 | Parameter     | Description                                                                         |
-|---------------|-------------------------------------------------------------------------------------|
+| ------------- | ----------------------------------------------------------------------------------- |
 | `branch`      | The branch from which the release is done.                                          |
 | `lastRelease` | `Object` with `version`, `gitTag` and `gitHead` of the last release.                |
 | `nextRelease` | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done. |
@@ -50,13 +54,14 @@ It is recommended to include `[skip ci]` in the commit message to not trigger a 
 
 The `message` `Release ${nextRelease.version} - ${new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })} [skip ci]\n\n${nextRelease.notes}` will generate the commit message:
 
-> Release v1.0.0 - Oct. 21, 2015 1:24 AM \[skip ci\]<br><br>## 1.0.0<br><br>### Features<br>* Generate 1.21 gigawatts of electricity<br>...
+> Release v1.0.0 - Oct. 21, 2015 1:24 AM \[skip ci\]<br><br>## 1.0.0<br><br>### Features<br>\* Generate 1.21 gigawatts of electricity<br>...
 
 #### `assets`
 
 Can be an `Array` or a single entry. Each entry can be either:
-- a [glob](https://github.com/micromatch/micromatch#matching-features)
-- or an `Object` with a `path` property containing a [glob](https://github.com/micromatch/micromatch#matching-features).
+
+* a [glob](https://github.com/micromatch/micromatch#matching-features)
+* or an `Object` with a `path` property containing a [glob](https://github.com/micromatch/micromatch#matching-features).
 
 Each entry in the `assets` `Array` is globbed individually. A [glob](https://github.com/micromatch/micromatch#matching-features) can be a `String` (`"dist/**/*.js"` or `"dist/mylib.js"`) or an `Array` of `String`s that will be globbed together (`["dist/**", "!**/*.css"]`).
 
@@ -97,8 +102,9 @@ Options can be set within the plugin definition in the Semantic-release configur
 ```
 
 When using with the [changelog](https://github.com/semantic-release/changelog) or [npm](https://github.com/semantic-release/npm) plugins:
-- The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [git](https://github.com/semantic-release/git) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
-- The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
+
+* The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [git](https://github.com/semantic-release/git) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
+* The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
 
 To use with the [changelog](https://github.com/semantic-release/changelog) and [npm](https://github.com/semantic-release/npm) plugins:
 
@@ -141,6 +147,7 @@ sec   rsa4096/XXXXXXXXXXXXXXXX 2017-12-01 [SC]
 uid                 <your_name> <your_email>
 ssb   rsa4096/YYYYYYYYYYYYYYYY 2017-12-01 [E]
 ```
+
 the GPG key ID if 16 character string, on the on the `sec` line, after `rsa4096`. In this example, the GPG key ID is `XXXXXXXXXXXXXXXX`.
 
 Export the public key (replace XXXXXXXXXXXXXXXX with your key ID):
@@ -185,10 +192,11 @@ $ travis login
 ```
 
 Add the following [environment](https://github.com/travis-ci/travis.rb#env) variables to Travis:
-- `GPG_PASSPHRASE` to Travis with the value set during the [GPG keys generation](#generate-the-gpg-keys) step
-- `GPG_KEY_ID` to Travis with the value of your GPG key ID retrieved during the [GPG keys generation](#generate-the-gpg-keys) (replace XXXXXXXXXXXXXXXX with your key ID)
-- `GIT_EMAIL` with the email address you set during the [GPG keys generation](#generate-the-gpg-keys) step
-- `GIT_USERNAME` with the name you set during the [GPG keys generation](#generate-the-gpg-keys) step
+
+* `GPG_PASSPHRASE` to Travis with the value set during the [GPG keys generation](#generate-the-gpg-keys) step
+* `GPG_KEY_ID` to Travis with the value of your GPG key ID retrieved during the [GPG keys generation](#generate-the-gpg-keys) (replace XXXXXXXXXXXXXXXX with your key ID)
+* `GIT_EMAIL` with the email address you set during the [GPG keys generation](#generate-the-gpg-keys) step
+* `GIT_USERNAME` with the name you set during the [GPG keys generation](#generate-the-gpg-keys) step
 
 ```bash
 $ travis env set GPG_PASSPHRASE <gpg_passphrase>
@@ -209,6 +217,7 @@ $ gpg --export-secret-key -a XXXXXXXXXXXXXXXX >> git_gpg_keys.asc
 ```bash
 $ travis encrypt-file git_gpg_keys.asc
 ```
+
 The `travis encrypt-file` will encrypt the keys into the `git_gpg_keys.asc.enc` file and output in the console the command to add to your `.travis.yml` file. It should look like `openssl aes-256-cbc -K $encrypted_AAAAAAAAAAAA_key -iv $encrypted_BBBBBBBBBBBB_iv -in git_gpg_keys.asc.enc -out git_gpg_keys.asc -d`.
 
 Copy this command to your `.travis.yml` file in the `before_install` step. Change the output path to write the unencrypted key in `/tmp`: `-out git_gpg_keys.asc` => `/tmp/git_gpg_keys.asc`. This will avoid to commit / modify / delete the unencrypted keys by mistake on the CI. Then add the commands to decrypt the GPG keys and make it available to `git`:
