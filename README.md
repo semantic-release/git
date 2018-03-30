@@ -31,7 +31,7 @@ Create a release commit, including configurable files.
 | Options        | Description                                                    | Default                                                                     |
 | -------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | `message`      | The message for the release commit. See [message](#message).   | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`  |
-| `assets`       | Files to include in the release commit. See [assets](#assets). | `["package.json", "npm-shrinkwrap.json"]`                                   |
+| `assets`       | Files to include in the release commit. See [assets](#assets). | `["package.json", "CHANGELOG.md", "package-lock.json", "npm-shrinkwrap.json"]`                                   |
 
 #### `message`
 
