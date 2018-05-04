@@ -11,7 +11,7 @@ import getStream from 'get-stream';
  * If `withRemote` is `false`, creates a regular repository and initialize it. Change the current working directory to the repository root.
  *
  * @param {Boolean} withRemote `true` to create a shallow clone of a bare repository.
- * @param {String} [branc='master'] The branch to initialize.
+ * @param {String} [branch='master'] The branch to initialize.
  * @return {String} The path of the clone if `withRemote` is `true`, the path of the repository otherwise.
  */
 export async function gitRepo(withRemote, branch = 'master') {
@@ -98,6 +98,7 @@ export async function gitTagVersion(tagName, sha) {
  * The shallow will contain a limited number of commit and no tags.
  *
  * @param {String} origin The path of the repository to clone.
+ * @param {String} [branch='master'] The branch to clone.
  * @param {Number} [depth=1] The number of commit to clone.
  * @return {String} The path of the cloned repository.
  */
@@ -113,6 +114,8 @@ export async function gitShallowClone(origin, branch = 'master', depth = 1) {
  * Get Git configuration.
  *
  * @param {String} name Config name.
+ *
+ * @returns {String} The config's value.
  */
 export async function gitGetConfig(name) {
   return execa.stdout('git', ['config', '--get', name]);
