@@ -23,8 +23,10 @@ test.beforeEach(t => {
   delete process.env.GH_TOKEN;
   delete process.env.GITHUB_TOKEN;
   delete process.env.GIT_CREDENTIALS;
-  delete process.env.GIT_EMAIL;
-  delete process.env.GIT_USERNAME;
+  delete process.env.GIT_AUTHOR_NAME;
+  delete process.env.GIT_AUTHOR_EMAIL;
+  delete process.env.GIT_COMMITTER_NAME;
+  delete process.env.GIT_COMMITTER_EMAIL;
   // Clear npm cache to refresh the module state
   clearModule('..');
   t.context.m = require('..');
@@ -41,8 +43,6 @@ test.afterEach.always(() => {
 });
 
 test.serial('Prepare from a shallow clone', async t => {
-  process.env.GIT_EMAIL = 'user@email.com';
-  process.env.GIT_USERNAME = 'user';
   const branch = 'master';
   const repositoryUrl = await gitRepo(true);
   await outputFile('package.json', "{name: 'test-package', version: '1.0.0'}");
@@ -69,8 +69,6 @@ test.serial('Prepare from a shallow clone', async t => {
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
   t.is(commit.gitTags, `(HEAD -> ${branch})`);
-  t.is(commit.author.name, process.env.GIT_USERNAME);
-  t.is(commit.author.email, process.env.GIT_EMAIL);
 });
 
 test.serial('Prepare from a detached head repository', async t => {

@@ -12,8 +12,10 @@ test.beforeEach(async t => {
   delete process.env.GH_TOKEN;
   delete process.env.GITHUB_TOKEN;
   delete process.env.GIT_CREDENTIALS;
-  delete process.env.GIT_EMAIL;
-  delete process.env.GIT_USERNAME;
+  delete process.env.GIT_AUTHOR_NAME;
+  delete process.env.GIT_AUTHOR_EMAIL;
+  delete process.env.GIT_COMMITTER_NAME;
+  delete process.env.GIT_COMMITTER_EMAIL;
   // Stub the logger functions
   t.context.log = stub();
   t.context.logger = {log: t.context.log};
@@ -50,9 +52,6 @@ test.serial(
     t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
     t.is(commit.body, `${nextRelease.notes}\n`);
     t.is(commit.gitTags, `(HEAD -> ${t.context.branch})`);
-
-    t.is(commit.author.name, 'semantic-release-bot');
-    t.is(commit.author.email, 'semantic-release-bot@martynus.net');
 
     t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'CHANGELOG.md']);
     t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'package.json']);
@@ -189,6 +188,27 @@ test.serial('Commit files matching the patterns in "assets", including dot files
   t.deepEqual(await gitCommitedFiles(), ['dist/.dotfile']);
 
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
+});
+
+test.serial('Set the commit author and committer name/email based on environment variables', async t => {
+  process.env.GIT_AUTHOR_NAME = 'author name';
+  process.env.GIT_AUTHOR_EMAIL = 'author email';
+  process.env.GIT_COMMITTER_NAME = 'committer name';
+  process.env.GIT_COMMITTER_EMAIL = 'committer email';
+  const lastRelease = {version: 'v1.0.0'};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+  await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
+
+  await prepare({}, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
+
+  // Verify the files that have been commited
+  t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md']);
+  // Verify the commit message contains on the new release notes
+  const [commit] = await gitGetCommits();
+  t.is(commit.author.name, 'author name');
+  t.is(commit.author.email, 'author email');
+  t.is(commit.committer.name, 'committer name');
+  t.is(commit.committer.email, 'committer email');
 });
 
 test.serial('Skip negated pattern if its alone in its group', async t => {
