@@ -111,17 +111,6 @@ export async function gitShallowClone(origin, branch = 'master', depth = 1) {
 }
 
 /**
- * Get Git configuration.
- *
- * @param {String} name Config name.
- *
- * @returns {String} The config's value.
- */
-export async function gitGetConfig(name) {
-  return execa.stdout('git', ['config', '--get', name]);
-}
-
-/**
  * @return {Array<String>} Array of staged files path.
  */
 export async function gitStaged() {

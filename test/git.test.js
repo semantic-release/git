@@ -1,7 +1,7 @@
 import test from 'ava';
 import {outputFile, appendFile} from 'fs-extra';
-import {add, getModifiedFiles, config, commit, gitHead, push} from '../lib/git';
-import {gitRepo, gitCommits, gitGetCommits, gitGetConfig, gitStaged, gitRemoteHead} from './helpers/git-utils';
+import {add, getModifiedFiles, commit, gitHead, push} from '../lib/git';
+import {gitRepo, gitCommits, gitGetCommits, gitStaged, gitRemoteHead} from './helpers/git-utils';
 
 // Save the current working diretory
 const cwd = process.cwd();
@@ -48,15 +48,6 @@ test.serial('Returns [] if there is no modified files', async t => {
   await gitRepo();
 
   await t.deepEqual(await getModifiedFiles(), []);
-});
-
-test.serial('Set git config', async t => {
-  // Create a git repository, set the current working directory at the root of the repo
-  await gitRepo();
-  // Add config
-  await config('user.name', 'username');
-
-  await t.is(await gitGetConfig('user.name'), 'username');
 });
 
 test.serial('Commit added files', async t => {
