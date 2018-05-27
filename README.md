@@ -86,7 +86,7 @@ Options can be set within the plugin definition in the Semantic-release configur
     "prepare": [
       "@semantic-release/npm",
       {
-        "path": "semantic-release-git-flow",
+        "path": "semantic-release-git-branches",
         "assets": ["package.json", "dist/**/*.{js|css}", "docs"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
@@ -105,8 +105,8 @@ To use with the [changelog](https://github.com/semantic-release/changelog) and [
 ```json
 {
   "release": {
-    "verifyConditions": ["@semantic-release/changelog", "@semantic-release/npm", "semantic-release-git-flow"],
-    "prepare": ["@semantic-release/changelog", "@semantic-release/npm", "semantic-release-git-flow"]
+    "verifyConditions": ["@semantic-release/changelog", "@semantic-release/npm", "semantic-release-git-branches"],
+    "prepare": ["@semantic-release/changelog", "@semantic-release/npm", "semantic-release-git-branches"]
   }
 }
 ```
