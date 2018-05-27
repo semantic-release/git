@@ -1,7 +1,7 @@
 {
 	"name": "semantic-release-git-branches",
 	"description": "A fork of @semantic-release/git that uses a more gitflow approach for releases",
-	"version": "0.0.0",
+	"version": "0.2.0",
 	"author": "Cedric van Putten <me@bycedric.com>",
 	"bugs": {
 		"url": "https://github.com/bycedric/semantic-release-git-branches/issues"
