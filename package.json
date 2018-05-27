@@ -1,20 +1,16 @@
 {
-  "name": "@semantic-release/git",
-  "description": "Set of semantic-release plugins to publish to a git repository",
-  "version": "0.0.0-development",
-  "author": "Pierre Vanduynslager (https://github.com/pvdlg)",
+  "name": "semantic-release-git-flow",
+  "description": "A fork of @semantic-release/git that uses a more gitflow approach for releases",
+  "version": "0.0.0",
+  "author": "Cedric van Putten <me@bycedric.com>",
   "bugs": {
-    "url": "https://github.com/semantic-release/git/issues"
+    "url": "https://github.com/bycedric/semantic-release-git-flow/issues"
   },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
   },
-  "contributors": [
-    "Stephan Bönnemann <stephan@boennemann.me> (http://boennemann.me)",
-    "Gregor Martynus (https://twitter.com/gr2m)"
-  ],
   "dependencies": {
     "@semantic-release/error": "^2.1.0",
     "aggregate-error": "^1.0.0",
@@ -48,16 +44,13 @@
     "lib",
     "index.js"
   ],
-  "homepage": "https://github.com/semantic-release/git#readme",
+  "homepage": "https://github.com/bycedric/semantic-release-git-flow#readme",
   "keywords": [
-    "changelog",
-    "commit",
-    "conventional-changelog",
-    "conventional-commits",
-    "git",
+    "semantic",
     "release",
-    "semantic-release",
-    "version"
+    "git",
+    "flow",
+    "bycedric"
   ],
   "license": "MIT",
   "main": "index.js",
@@ -86,7 +79,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/semantic-release/git.git"
+    "url": "https://github.com/bycedric/semantic-release-git-flow.git"
   },
   "scripts": {
     "cm": "git-cz",
