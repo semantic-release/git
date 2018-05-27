@@ -15,18 +15,18 @@ import getStream from 'get-stream';
  * @return {String} The path of the clone if `withRemote` is `true`, the path of the repository otherwise.
  */
 export async function gitRepo(withRemote, branch = 'master') {
-  const dir = tempy.directory();
+	const dir = tempy.directory();
 
-  process.chdir(dir);
-  await execa('git', ['init'].concat(withRemote ? ['--bare'] : []));
+	process.chdir(dir);
+	await execa('git', ['init'].concat(withRemote ? ['--bare'] : []));
 
-  if (withRemote) {
-    await initBareRepo(fileUrl(dir), branch);
-    await gitShallowClone(fileUrl(dir));
-  } else {
-    await gitCheckout(branch);
-  }
-  return fileUrl(dir);
+	if (withRemote) {
+		await initBareRepo(fileUrl(dir), branch);
+		await gitShallowClone(fileUrl(dir));
+	} else {
+		await gitCheckout(branch);
+	}
+	return fileUrl(dir);
 }
 
 /**
@@ -41,12 +41,12 @@ export async function gitRepo(withRemote, branch = 'master') {
  * @param {String} [branch='master'] the branch to initialize.
  */
 export async function initBareRepo(origin, branch = 'master') {
-  const clone = tempy.directory();
-  await execa('git', ['clone', '--no-hardlinks', origin, clone]);
-  process.chdir(clone);
-  await gitCheckout(branch);
-  await gitCommits(['Initial commit']);
-  await execa('git', ['push', origin, branch]);
+	const clone = tempy.directory();
+	await execa('git', ['clone', '--no-hardlinks', origin, clone]);
+	process.chdir(clone);
+	await gitCheckout(branch);
+	await gitCommits(['Initial commit']);
+	await execa('git', ['push', origin, branch]);
 }
 
 /**
@@ -57,17 +57,17 @@ export async function initBareRepo(origin, branch = 'master') {
  * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
  */
 export async function gitCommits(messages) {
-  await pReduce(
-    messages,
-    async (commits, msg) => {
-      const stdout = await execa.stdout('git', ['commit', '-m', msg, '--allow-empty', '--no-gpg-sign']);
-      const [, hash] = /^\[(?:\w+)\(?.*?\)?(\w+)\] .+(?:\n|$)/.exec(stdout);
-      commits.push(hash);
-      return commits;
-    },
-    []
-  );
-  return (await gitGetCommits()).slice(0, messages.length);
+	await pReduce(
+		messages,
+		async (commits, msg) => {
+			const stdout = await execa.stdout('git', ['commit', '-m', msg, '--allow-empty', '--no-gpg-sign']);
+			const [, hash] = /^\[(?:\w+)\(?.*?\)?(\w+)\] .+(?:\n|$)/.exec(stdout);
+			commits.push(hash);
+			return commits;
+		},
+		[]
+	);
+	return (await gitGetCommits()).slice(0, messages.length);
 }
 
 /**
@@ -77,7 +77,7 @@ export async function gitCommits(messages) {
  * @param {boolean} create `true` to create the branche ans switch, `false` to only switch.
  */
 export async function gitCheckout(branch, create = true) {
-  await execa('git', create ? ['checkout', '-b', branch] : ['checkout', branch]);
+	await execa('git', create ? ['checkout', '-b', branch] : ['checkout', branch]);
 }
 
 /**
@@ -89,8 +89,8 @@ export async function gitCheckout(branch, create = true) {
  * @return {String} The commit sha of the created tag.
  */
 export async function gitTagVersion(tagName, sha) {
-  await execa('git', sha ? ['tag', '-f', tagName, sha] : ['tag', tagName]);
-  return execa.stdout('git', ['rev-list', '-1', '--tags', tagName]);
+	await execa('git', sha ? ['tag', '-f', tagName, sha] : ['tag', tagName]);
+	return execa.stdout('git', ['rev-list', '-1', '--tags', tagName]);
 }
 
 /**
@@ -103,21 +103,21 @@ export async function gitTagVersion(tagName, sha) {
  * @return {String} The path of the cloned repository.
  */
 export async function gitShallowClone(origin, branch = 'master', depth = 1) {
-  const dir = tempy.directory();
+	const dir = tempy.directory();
 
-  process.chdir(dir);
-  await execa('git', ['clone', '--no-hardlinks', '--no-tags', '-b', branch, '--depth', depth, origin, dir]);
-  return dir;
+	process.chdir(dir);
+	await execa('git', ['clone', '--no-hardlinks', '--no-tags', '-b', branch, '--depth', depth, origin, dir]);
+	return dir;
 }
 
 /**
  * @return {Array<String>} Array of staged files path.
  */
 export async function gitStaged() {
-  return (await execa.stdout('git', ['status', '--porcelain']))
-    .split('\n')
-    .filter(status => status.startsWith('A '))
-    .map(status => status.match(/^A\s+(.+)$/)[1]);
+	return (await execa.stdout('git', ['status', '--porcelain']))
+		.split('\n')
+		.filter(status => status.startsWith('A '))
+		.map(status => status.match(/^A\s+(.+)$/)[1]);
 }
 
 /**
@@ -127,9 +127,9 @@ export async function gitStaged() {
  * @return {Array<String>} The list of files path included in the commit.
  */
 export async function gitCommitedFiles(ref = 'HEAD') {
-  return (await execa.stdout('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref]))
-    .split('\n')
-    .filter(file => Boolean(file));
+	return (await execa.stdout('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref]))
+		.split('\n')
+		.filter(file => Boolean(file));
 }
 
 /**
@@ -139,12 +139,12 @@ export async function gitCommitedFiles(ref = 'HEAD') {
  * @return {Array<Object>} The list of parsed commits.
  */
 export async function gitGetCommits(from) {
-  Object.assign(gitLogParser.fields, {hash: 'H', message: 'B', gitTags: 'd', committerDate: {key: 'ci', type: Date}});
-  return (await getStream.array(gitLogParser.parse({_: `${from ? from + '..' : ''}HEAD`}))).map(commit => {
-    commit.message = commit.message.trim();
-    commit.gitTags = commit.gitTags.trim();
-    return commit;
-  });
+	Object.assign(gitLogParser.fields, {hash: 'H', message: 'B', gitTags: 'd', committerDate: {key: 'ci', type: Date}});
+	return (await getStream.array(gitLogParser.parse({_: `${from ? from + '..' : ''}HEAD`}))).map(commit => {
+		commit.message = commit.message.trim();
+		commit.gitTags = commit.gitTags.trim();
+		return commit;
+	});
 }
 
 /**
@@ -155,14 +155,14 @@ export async function gitGetCommits(from) {
  * @return {String} The path of the new repository.
  */
 export async function gitDetachedHead(origin, head) {
-  const dir = tempy.directory();
+	const dir = tempy.directory();
 
-  process.chdir(dir);
-  await execa('git', ['init']);
-  await execa('git', ['remote', 'add', 'origin', origin]);
-  await execa('git', ['fetch']);
-  await execa('git', ['checkout', head]);
-  return dir;
+	process.chdir(dir);
+	await execa('git', ['init']);
+	await execa('git', ['remote', 'add', 'origin', origin]);
+	await execa('git', ['fetch']);
+	await execa('git', ['checkout', head]);
+	return dir;
 }
 
 /**
@@ -172,8 +172,8 @@ export async function gitDetachedHead(origin, head) {
  * @return {String} The sha of the commit associated with `tagName` on the remote repository.
  */
 export async function gitRemoteHead(origin) {
-  return (await execa.stdout('git', ['ls-remote', origin, 'HEAD']))
-    .split('\n')
-    .filter(tag => Boolean(tag))
-    .map(tag => tag.match(/^(\S+)/)[1])[0];
+	return (await execa.stdout('git', ['ls-remote', origin, 'HEAD']))
+		.split('\n')
+		.filter(tag => Boolean(tag))
+		.map(tag => tag.match(/^(\S+)/)[1])[0];
 }
