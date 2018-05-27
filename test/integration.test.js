@@ -113,7 +113,7 @@ test.serial('Verify authentication only on the fist call', async t => {
 test('Throw SemanticReleaseError if prepare config is invalid', async t => {
 	const message = 42;
 	const assets = true;
-	const options = {prepare: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets}]};
+	const options = {prepare: ['@semantic-release/npm', {path: 'semantic-release-git-branches', message, assets}]};
 
 	const errors = [...(await t.throws(t.context.m.verifyConditions({}, {options, logger: t.context.logger})))];
 
