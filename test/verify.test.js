@@ -121,6 +121,13 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', as
 	t.is(error.code, 'EINVALIDMESSAGE');
 });
 
+test('Throw SemanticReleaseError if unknown branches are provided to merge with', async t => {
+	const [error] = await t.throws(verify({branchMerges: ['abc']}, {options: t.context.options}, t.context.logger));
+
+	t.is(error.name, 'SemanticReleaseError');
+	t.is(error.code, 'EINVALIDMERGEBRANCH');
+});
+
 test.serial('Verify undefined "message" and "assets"', async t => {
 	await gitCommits(['Test commit']);
 

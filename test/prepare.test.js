@@ -36,6 +36,7 @@ test.serial(
 		const pluginConfig = {};
 		const lastRelease = {};
 		const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+		const branchRelease = `release/${nextRelease.version}`;
 
 		await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
 		await outputFile('package.json', "{name: 'test-package'}");
@@ -51,15 +52,20 @@ test.serial(
 
 		t.is(commit.subject, `chore: create new release ${nextRelease.version} [skip ci]`);
 		t.is(commit.body, `${nextRelease.notes}\n`);
-		t.is(commit.gitTags, `(HEAD -> ${t.context.branch})`);
+		t.is(commit.gitTags, `(HEAD -> ${branchRelease})`);
 
-		t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'CHANGELOG.md']);
-		t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'package.json']);
-		t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'package-lock.json']);
-		t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
-		t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
-		t.deepEqual(t.context.log.args[5], ['Creating tag %s', nextRelease.gitTag]);
-		t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
+		t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+		t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'CHANGELOG.md']);
+		t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'package.json']);
+		t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'package-lock.json']);
+		t.deepEqual(t.context.log.args[4], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
+		t.deepEqual(t.context.log.args[5], ['Found %d file(s) to commit', 4]);
+		t.deepEqual(t.context.log.args[6], ['Creating tag %s', nextRelease.gitTag]);
+		t.deepEqual(t.context.log.args[7], ['Pulling branch %s', t.context.branch]);
+		t.deepEqual(t.context.log.args[8], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+		t.deepEqual(t.context.log.args[9], ['Pushing updated branch %s', t.context.branch]);
+		t.deepEqual(t.context.log.args[10], ['Cleaning up for next branch...']);
+		t.deepEqual(t.context.log.args[11], ['Prepared Git release: %s', nextRelease.gitTag]);
 	}
 );
 
@@ -69,6 +75,8 @@ test.serial(
 		const pluginConfig = {assets: []};
 		const lastRelease = {};
 		const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+		const branchRelease = `release/${nextRelease.version}`;
+
 		await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
 		await outputFile('package.json', "{name: 'test-package'}");
 		await outputFile('package-lock.json', "{name: 'test-package'}");
@@ -78,8 +86,14 @@ test.serial(
 
 		// Verify no files have been commited
 		t.deepEqual(await gitCommitedFiles(), []);
-		t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-		t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
+
+		t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+		t.deepEqual(t.context.log.args[1], ['Creating tag %s', nextRelease.gitTag]);
+		t.deepEqual(t.context.log.args[2], ['Pulling branch %s', t.context.branch]);
+		t.deepEqual(t.context.log.args[3], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+		t.deepEqual(t.context.log.args[4], ['Pushing updated branch %s', t.context.branch]);
+		t.deepEqual(t.context.log.args[5], ['Cleaning up for next branch...']);
+		t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
 	}
 );
 
@@ -110,6 +124,7 @@ test.serial('Commit files matching the patterns in "assets"', async t => {
 	};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	// Create .gitignore to ignore file5.js
 	await outputFile('.gitignore', 'file5.js');
@@ -129,11 +144,19 @@ test.serial('Commit files matching the patterns in "assets"', async t => {
 	// file5.js is ignore because it's in the .gitignore
 	// file6.js and file7.css are included because dir2 is expanded
 	t.deepEqual(await gitCommitedFiles(), ['dir/file2.js', 'dir2/file6.js', 'dir2/file7.css', 'file1.js']);
-	t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'file1.js']);
-	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'dir/file2.js']);
-	t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'dir2/file6.js']);
-	t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'dir2/file7.css']);
-	t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
+
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'file1.js']);
+	t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'dir/file2.js']);
+	t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'dir2/file6.js']);
+	t.deepEqual(t.context.log.args[4], ['Add %s to the release commit', 'dir2/file7.css']);
+	t.deepEqual(t.context.log.args[5], ['Found %d file(s) to commit', 4]);
+	t.deepEqual(t.context.log.args[6], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[7], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[8], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[9], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[10], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[11], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Commit files matching the patterns in "assets" as Objects', async t => {
@@ -142,6 +165,7 @@ test.serial('Commit files matching the patterns in "assets" as Objects', async t
 	};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	// Create .gitignore to ignore file5.js
 	await outputFile('.gitignore', 'file5.js');
@@ -162,17 +186,26 @@ test.serial('Commit files matching the patterns in "assets" as Objects', async t
 	// file5.js is ignore because it's in the .gitignore
 	// file6.js and file7.css are included because dir2 is expanded
 	t.deepEqual(await gitCommitedFiles(), ['dir/file2.js', 'dir2/file6.js', 'dir2/file7.css', 'file1.js']);
-	t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'file1.js']);
-	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'dir/file2.js']);
-	t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'dir2/file6.js']);
-	t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'dir2/file7.css']);
-	t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
+
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'file1.js']);
+	t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'dir/file2.js']);
+	t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'dir2/file6.js']);
+	t.deepEqual(t.context.log.args[4], ['Add %s to the release commit', 'dir2/file7.css']);
+	t.deepEqual(t.context.log.args[5], ['Found %d file(s) to commit', 4]);
+	t.deepEqual(t.context.log.args[6], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[7], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[8], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[9], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[10], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[11], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Commit files matching the patterns in "assets" as single glob', async t => {
 	const pluginConfig = {assets: 'dist/**/*.js'};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	await outputFile('dist/file1.js', 'Test content');
 	await outputFile('dist/file2.css', 'Test content');
@@ -181,14 +214,22 @@ test.serial('Commit files matching the patterns in "assets" as single glob', asy
 
 	t.deepEqual(await gitCommitedFiles(), ['dist/file1.js']);
 
-	t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'dist/file1.js']);
-	t.deepEqual(t.context.log.args[1], ['Found %d file(s) to commit', 1]);
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'dist/file1.js']);
+	t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 1]);
+	t.deepEqual(t.context.log.args[3], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[4], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[5], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[6], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[7], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[8], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Commit files matching the patterns in "assets", including dot files', async t => {
 	const pluginConfig = {assets: 'dist'};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	await outputFile('dist/.dotfile', 'Test content');
 
@@ -196,8 +237,15 @@ test.serial('Commit files matching the patterns in "assets", including dot files
 
 	t.deepEqual(await gitCommitedFiles(), ['dist/.dotfile']);
 
-	t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'dist/.dotfile']);
-	t.deepEqual(t.context.log.args[1], ['Found %d file(s) to commit', 1]);
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'dist/.dotfile']);
+	t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 1]);
+	t.deepEqual(t.context.log.args[3], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[4], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[5], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[6], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[7], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[8], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Set the commit author and committer name/email based on environment variables', async t => {
@@ -225,6 +273,7 @@ test.serial('Skip negated pattern if its alone in its group', async t => {
 	const pluginConfig = {assets: ['!**/*', 'file.js']};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	await outputFile('file.js', 'Test content');
 
@@ -232,27 +281,42 @@ test.serial('Skip negated pattern if its alone in its group', async t => {
 
 	t.deepEqual(await gitCommitedFiles(), ['file.js']);
 
-	t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'file.js']);
-	t.deepEqual(t.context.log.args[1], ['Found %d file(s) to commit', 1]);
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'file.js']);
+	t.deepEqual(t.context.log.args[2], ['Found %d file(s) to commit', 1]);
+	t.deepEqual(t.context.log.args[3], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[4], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[5], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[6], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[7], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[8], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Skip commit if there is no files to commit', async t => {
 	const pluginConfig = {};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
 
 	// Verify the files that have been commited
 	t.deepEqual(await gitCommitedFiles(), []);
-	t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-	t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
+
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[2], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[3], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[4], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[5], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Skip commit if all the modified files are in .gitignore', async t => {
 	const pluginConfig = {assets: 'dist'};
 	const lastRelease = {};
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+	const branchRelease = `release/${nextRelease.version}`;
 
 	await outputFile('dist/files1.js', 'Test content');
 	await outputFile('.gitignore', 'dist/**/*');
@@ -261,6 +325,12 @@ test.serial('Skip commit if all the modified files are in .gitignore', async t =
 
 	// Verify the files that have been commited
 	t.deepEqual(await gitCommitedFiles(), []);
-	t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-	t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
+
+	t.deepEqual(t.context.log.args[0], ['Creating new release branch %s', branchRelease]);
+	t.deepEqual(t.context.log.args[1], ['Creating tag %s', nextRelease.gitTag]);
+	t.deepEqual(t.context.log.args[2], ['Pulling branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[3], ['Merging release branch %s into %s', branchRelease, t.context.branch]);
+	t.deepEqual(t.context.log.args[4], ['Pushing updated branch %s', t.context.branch]);
+	t.deepEqual(t.context.log.args[5], ['Cleaning up for next branch...']);
+	t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
 });

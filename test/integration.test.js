@@ -58,6 +58,7 @@ test.serial('Prepare from a shallow clone', async t => {
 	await outputFile('dist/file.css', 'Updated content');
 
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Version 2.0.0 changelog'};
+	const branchRelease = `release/${nextRelease.version}`;
 	const pluginConfig = {
 		message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
 		assets: '**/*.{js,json}',
@@ -68,7 +69,7 @@ test.serial('Prepare from a shallow clone', async t => {
 	const [commit] = await gitGetCommits();
 	t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
 	t.is(commit.body, `${nextRelease.notes}\n`);
-	t.is(commit.gitTags, `(HEAD -> ${branch})`);
+	t.is(commit.gitTags, `(HEAD -> ${branchRelease})`);
 });
 
 test.serial('Prepare from a detached head repository', async t => {
@@ -87,6 +88,7 @@ test.serial('Prepare from a detached head repository', async t => {
 	await outputFile('dist/file.css', 'Updated content');
 
 	const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Version 2.0.0 changelog'};
+	const branchRelease = `release/${nextRelease.version}`;
 	const pluginConfig = {
 		message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
 		assets: '**/*.{js,json}',
@@ -97,7 +99,7 @@ test.serial('Prepare from a detached head repository', async t => {
 	const [commit] = await gitGetCommits();
 	t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
 	t.is(commit.body, `${nextRelease.notes}\n`);
-	t.is(commit.gitTags, `(HEAD)`);
+	t.is(commit.gitTags, `(HEAD -> ${branchRelease})`);
 });
 
 test.serial('Verify authentication only on the fist call', async t => {
