@@ -14,13 +14,13 @@ async function verifyConditions(pluginConfig, context) {
 		pluginConfig.assets = defaultTo(pluginConfig.assets, preparePlugin.assets);
 		pluginConfig.message = defaultTo(pluginConfig.message, preparePlugin.message);
 	}
-	await verifyGit(pluginConfig);
+	await verifyGit(pluginConfig, context);
 	verified = true;
 }
 
 async function prepare(pluginConfig, context) {
 	if (!verified) {
-		await verifyGit(pluginConfig);
+		await verifyGit(pluginConfig, context);
 		verified = true;
 	}
 	await prepareGit(pluginConfig, context);
