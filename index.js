@@ -11,8 +11,9 @@ async function verifyConditions(pluginConfig, context) {
 		const preparePlugin =
 			castArray(options.prepare).find(config => config.path && config.path === 'semantic-release-git-branches') || {};
 
-		pluginConfig.assets = defaultTo(pluginConfig.assets, preparePlugin.assets);
-		pluginConfig.message = defaultTo(pluginConfig.message, preparePlugin.message);
+		['message', 'assets', 'branchName', 'branchPush', 'branchMerges'].forEach(configKey => {
+			pluginConfig[configKey] = defaultTo(pluginConfig[configKey], preparePlugin[configKey]);
+		});
 	}
 	await verifyGit(pluginConfig, context);
 	verified = true;
