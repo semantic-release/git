@@ -1,9 +1,9 @@
-# Git Flow - Semantic Release
+# Git Branches - Semantic Release
 
-[![Latest Release](https://img.shields.io/github/release/byCedric/semantic-release-git-flow/all.svg?style=flat-square)](https://github.com/byCedric/semantic-release-git-flow/releases)
-[![Build Status](https://img.shields.io/travis/byCedric/semantic-release-git-flow/master.svg?style=flat-square)](https://travis-ci.com/byCedric/semantic-release-git-flow)
-[![Codecov coverage](https://img.shields.io/codecov/c/github/byCedric/semantic-release-git-flow.svg?style=flat-square)](https://codecov.io/gh/byCedric/semantic-release-git-flow)
-[![Code Climate grade](https://img.shields.io/codeclimate/maintainability/byCedric/semantic-release-git-flow.svg?style=flat-square)](https://codeclimate.com/github/byCedric/semantic-release-git-flow)
+[![Latest Release](https://img.shields.io/github/release/byCedric/semantic-release-git-branches/all.svg?style=flat-square)](https://github.com/byCedric/semantic-release-git-branches/releases)
+[![Build Status](https://img.shields.io/travis/byCedric/semantic-release-git-branches/master.svg?style=flat-square)](https://travis-ci.com/byCedric/semantic-release-git-branches)
+[![Codecov coverage](https://img.shields.io/codecov/c/github/byCedric/semantic-release-git-branches.svg?style=flat-square)](https://codecov.io/gh/byCedric/semantic-release-git-branches)
+[![Code Climate grade](https://img.shields.io/codeclimate/maintainability/byCedric/semantic-release-git-branches.svg?style=flat-square)](https://codeclimate.com/github/byCedric/semantic-release-git-branches)
 
 A fork of [`@semantic-release/git`](https://github.com/semantic-release/git) which uses the [git flow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) approach for releases.
 
@@ -97,8 +97,8 @@ Options can be set within the plugin definition in the Semantic-release configur
 ```
 
 When using with the [changelog](https://github.com/semantic-release/changelog) or [npm](https://github.com/semantic-release/npm) plugins:
-- The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [gitflow](https://github.com/bycedric/semantic-release-git-flow) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
-- The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [gitflow](https://github.com/bycedric/semantic-release-git-flow) plugin can include it in the release commit.
+- The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [gitflow](https://github.com/bycedric/semantic-release-git-branches) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
+- The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [gitflow](https://github.com/bycedric/semantic-release-git-branches) plugin can include it in the release commit.
 
 To use with the [changelog](https://github.com/semantic-release/changelog) and [npm](https://github.com/semantic-release/npm) plugins:
 

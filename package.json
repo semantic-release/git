@@ -1,10 +1,10 @@
 {
-	"name": "semantic-release-git-flow",
+	"name": "semantic-release-git-branches",
 	"description": "A fork of @semantic-release/git that uses a more gitflow approach for releases",
 	"version": "0.0.0",
 	"author": "Cedric van Putten <me@bycedric.com>",
 	"bugs": {
-		"url": "https://github.com/bycedric/semantic-release-git-flow/issues"
+		"url": "https://github.com/bycedric/semantic-release-git-branches/issues"
 	},
 	"config": {
 		"commitizen": {
@@ -44,7 +44,7 @@
 		"lib",
 		"index.js"
 	],
-	"homepage": "https://github.com/bycedric/semantic-release-git-flow#readme",
+	"homepage": "https://github.com/bycedric/semantic-release-git-branches#readme",
 	"keywords": [
 		"semantic",
 		"release",
@@ -79,7 +79,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/bycedric/semantic-release-git-flow.git"
+		"url": "https://github.com/bycedric/semantic-release-git-branches.git"
 	},
 	"scripts": {
 		"cm": "git-cz",
