@@ -90,7 +90,6 @@
 		"test": "nyc ava -v"
 	},
 	"xo": {
-		"prettier": true,
-		"space": true
+		"prettier": true
 	}
 }
