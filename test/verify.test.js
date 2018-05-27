@@ -117,7 +117,7 @@ test('Throw SemanticReleaseError if "message" option is not a String', async t =
 });
 
 test('Throw SemanticReleaseError if "message" option is an empty String', async t => {
-	const message = '';
+	const message = ' ';
 	const [error] = await t.throws(verify({message}, {}, t.context.logger));
 
 	t.is(error.name, 'SemanticReleaseError');
