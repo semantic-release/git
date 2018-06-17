@@ -6,11 +6,6 @@
 	"bugs": {
 		"url": "https://github.com/bycedric/semantic-release-git-branches/issues"
 	},
-	"config": {
-		"commitizen": {
-			"path": "cz-conventional-changelog"
-		}
-	},
 	"dependencies": {
 		"@semantic-release/error": "^2.1.0",
 		"aggregate-error": "^1.0.0",
@@ -26,7 +21,6 @@
 		"ava": "^0.25.0",
 		"clear-module": "^2.1.0",
 		"codecov": "^3.0.0",
-		"commitizen": "^2.9.6",
 		"cz-conventional-changelog": "^2.0.0",
 		"file-url": "^2.0.2",
 		"get-stream": "^3.0.0",
