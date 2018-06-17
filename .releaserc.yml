@@ -1,0 +1,29 @@
+---
+branch: master
+repositoryUrl: https://github.com/bycedric/semantic-release-git-branches.git
+tagFormat: ${version}
+analyzeCommits:
+  - path: '@semantic-release/commit-analyzer'
+    preset: angular
+    releaseRules:
+      - type: docs
+        release: patch
+      - type: feature
+        release: minor
+      - type: fix
+        release: patch
+      - type: test
+        release: patch
+verifyConditions:
+  - '@semantic-release/changelog'
+  - '@semantic-release/npm'
+  - ./lib/verify
+prepare:
+  - '@semantic-release/changelog'
+  - '@semantic-release/npm'
+  - path: ./lib/prepare
+    branchMerges: [develop, master]
+    message: |
+      release: create new version ${nextRelease.version} [skip ci]
+
+      ${nextRelease.notes}

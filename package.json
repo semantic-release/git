@@ -18,15 +18,15 @@
 		"p-reduce": "^1.0.0"
 	},
 	"devDependencies": {
+		"@semantic-release/changelog": "^2.0.2",
 		"ava": "^0.25.0",
 		"clear-module": "^2.1.0",
 		"codecov": "^3.0.0",
-		"cz-conventional-changelog": "^2.0.0",
 		"file-url": "^2.0.2",
 		"get-stream": "^3.0.0",
 		"git-log-parser": "^1.2.0",
 		"nyc": "^11.1.0",
-		"semantic-release": "^15.0.0",
+		"semantic-release": "^15.5.4",
 		"sinon": "^5.0.0",
 		"tempy": "^0.2.1",
 		"xo": "^0.21.0"
@@ -60,27 +60,18 @@
 		],
 		"all": true
 	},
-	"peerDependencies": {
-		"semantic-release": ">=15.4.0 <16.0.0"
-	},
 	"prettier": {
 		"printWidth": 120,
 		"trailingComma": "es5"
-	},
-	"publishConfig": {
-		"access": "public",
-		"tag": "next"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/bycedric/semantic-release-git-branches.git"
 	},
 	"scripts": {
-		"cm": "git-cz",
 		"codecov": "codecov -f coverage/coverage-final.json",
 		"lint": "xo",
 		"pretest": "npm run lint",
-		"semantic-release": "semantic-release",
 		"test": "nyc ava -v"
 	},
 	"xo": {

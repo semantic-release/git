@@ -14,3 +14,11 @@ script:
   - npm test
 after_success:
   - npm run codecov
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - npx semantic-release
+  on:
+    branch: master
+    node: lts/*
