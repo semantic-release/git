@@ -47,7 +47,10 @@ test.serial(
     // Verify the remote repo has a the version referencing the same commit sha at the local head
     const [commit] = await gitGetCommits();
     // Verify the files that have been commited
-    t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package-lock.json', 'package.json']);
+    t.deepEqual(
+      (await gitCommitedFiles()).sort(),
+      ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package-lock.json', 'package.json'].sort()
+    );
 
     t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
     t.is(commit.body, `${nextRelease.notes}\n`);
