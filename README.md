@@ -64,7 +64,7 @@ Each entry in the `assets` `Array` is globbed individually. A [glob](https://git
 
 If a directory is configured, all the files under this directory and its children will be included.
 
-If a file has a match in `.gitignore` it will always be excluded.
+**Note**: If a file has a match in `assets` it will be included even if it also has a match in `.gitignore`.
 
 ##### `assets` examples
 
