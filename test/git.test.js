@@ -22,7 +22,7 @@ test.serial('Add file to index', async t => {
   await t.deepEqual(await gitStaged(), ['file1.js']);
 });
 
-test.serial('Get the modified files, ignoring files in .gitignore but including untracked ones', async t => {
+test.serial('Get the modified files, including files in .gitignore but including untracked ones', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   await gitRepo();
   // Create files
@@ -34,13 +34,14 @@ test.serial('Get the modified files, ignoring files in .gitignore but including 
   // Add files and commit
   await add(['.']);
   await commit('Test commit');
-  // Update file1.js and dir/file2.js
+  // Update file1.js, dir/file2.js and file3.js
   await appendFile('file1.js', 'Test content');
   await appendFile('dir/file2.js', 'Test content');
+  await appendFile('file3.js', 'Test content');
   // Add untracked file
   await outputFile('file4.js', 'Test content');
 
-  await t.deepEqual(await getModifiedFiles(), ['file4.js', 'dir/file2.js', 'file1.js']);
+  await t.deepEqual((await getModifiedFiles()).sort(), ['file4.js', 'file3.js', 'dir/file2.js', 'file1.js'].sort());
 });
 
 test.serial('Returns [] if there is no modified files', async t => {
