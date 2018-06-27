@@ -35,6 +35,8 @@ Create a release commit, including configurable files.
 | `message`      | The message for the release commit. See [message](#message).   | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
 | `assets`       | Files to include in the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
 
+**Note**: If you use a [shareable configuration](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/shareable-configurations.md#shareable-configurations) that defines one of these options you can set it to `false` in your [**semantic-release** configuration](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/configuration.md#configuration) in order to use the default value.
+
 #### `message`
 
 The message for the release commit is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
