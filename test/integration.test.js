@@ -64,7 +64,7 @@ test.serial('Prepare from a shallow clone', async t => {
   };
   await t.context.m.prepare(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 
-  t.deepEqual(await gitCommitedFiles(), ['dist/file.js', 'package.json']);
+  t.deepEqual((await gitCommitedFiles()).sort(), ['dist/file.js', 'package.json'].sort());
   const [commit] = await gitGetCommits();
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
@@ -93,7 +93,7 @@ test.serial('Prepare from a detached head repository', async t => {
   };
   await t.context.m.prepare(pluginConfig, {logger: t.context.logger, options: {repositoryUrl, branch}, nextRelease});
 
-  t.deepEqual(await gitCommitedFiles(), ['dist/file.js', 'package.json']);
+  t.deepEqual((await gitCommitedFiles()).sort(), ['dist/file.js', 'package.json'].sort());
   const [commit] = await gitGetCommits();
   t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
