@@ -1,130 +1,118 @@
+import path from 'path';
 import test from 'ava';
 import {outputFile} from 'fs-extra';
 import {stub} from 'sinon';
 import prepare from '../lib/prepare';
 import {gitRepo, gitGetCommits, gitCommitedFiles} from './helpers/git-utils';
 
-// Save the current process.env
-const envBackup = Object.assign({}, process.env);
-
-test.beforeEach(async t => {
-  // Delete env variables in case they are on the machine running the tests
-  delete process.env.GH_TOKEN;
-  delete process.env.GITHUB_TOKEN;
-  delete process.env.GIT_CREDENTIALS;
-  delete process.env.GIT_AUTHOR_NAME;
-  delete process.env.GIT_AUTHOR_EMAIL;
-  delete process.env.GIT_COMMITTER_NAME;
-  delete process.env.GIT_COMMITTER_EMAIL;
+test.beforeEach(t => {
   // Stub the logger functions
   t.context.log = stub();
   t.context.logger = {log: t.context.log};
-  // Create a git repository with a remote, set the current working directory at the root of the repo
-  t.context.repositoryUrl = await gitRepo(true);
-  t.context.branch = 'master';
-  t.context.options = {repositoryUrl: t.context.repositoryUrl, branch: t.context.branch};
 });
 
-test.afterEach.always(() => {
-  // Restore process.env
-  process.env = envBackup;
+test('Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if they exists and have been changed', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {};
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+  const changelogPath = path.resolve(cwd, 'CHANGELOG.md');
+  const pkgPath = path.resolve(cwd, 'package.json');
+  const pkgLockPath = path.resolve(cwd, 'package-lock.json');
+  const shrinkwrapPath = path.resolve(cwd, 'npm-shrinkwrap.json');
+
+  await outputFile(changelogPath, 'Initial CHANGELOG');
+  await outputFile(pkgPath, "{name: 'test-package'}");
+  await outputFile(pkgLockPath, "{name: 'test-package'}");
+  await outputFile(shrinkwrapPath, "{name: 'test-package'}");
+
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
+
+  // Verify the remote repo has a the version referencing the same commit sha at the local head
+  const [commit] = await gitGetCommits(undefined, {cwd, env});
+  // Verify the files that have been commited
+  t.deepEqual(
+    (await gitCommitedFiles('HEAD', {cwd, env})).sort(),
+    ['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json'].sort()
+  );
+  t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
+  t.is(commit.body, `${nextRelease.notes}\n`);
+  t.is(commit.gitTags, `(HEAD -> ${options.branch})`);
+  t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', changelogPath]);
+  t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', pkgPath]);
+  t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', pkgLockPath]);
+  t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', shrinkwrapPath]);
+  t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
+  t.deepEqual(t.context.log.args[5], ['Creating tag %s', nextRelease.gitTag]);
+  t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
-test.serial(
-  'Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if they exists and have been changed',
-  async t => {
-    const pluginConfig = {};
-    const lastRelease = {};
-    const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {assets: []};
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'CHANGELOG.md'), 'Initial CHANGELOG');
+  await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package'}");
+  await outputFile(path.resolve(cwd, 'package-lock.json'), "{name: 'test-package'}");
+  await outputFile(path.resolve(cwd, 'npm-shrinkwrap.json'), "{name: 'test-package'}");
 
-    await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
-    await outputFile('package.json', "{name: 'test-package'}");
-    await outputFile('package-lock.json', "{name: 'test-package'}");
-    await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
-    await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
-
-    // Verify the remote repo has a the version referencing the same commit sha at the local head
-    const [commit] = await gitGetCommits();
-    // Verify the files that have been commited
-    t.deepEqual(
-      (await gitCommitedFiles()).sort(),
-      ['CHANGELOG.md', 'npm-shrinkwrap.json', 'package-lock.json', 'package.json'].sort()
-    );
-
-    t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
-    t.is(commit.body, `${nextRelease.notes}\n`);
-    t.is(commit.gitTags, `(HEAD -> ${t.context.branch})`);
-
-    t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', 'CHANGELOG.md']);
-    t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', 'package.json']);
-    t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', 'package-lock.json']);
-    t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', 'npm-shrinkwrap.json']);
-    t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
-    t.deepEqual(t.context.log.args[5], ['Creating tag %s', nextRelease.gitTag]);
-    t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
-  }
-);
-
-test.serial(
-  'Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it',
-  async t => {
-    const pluginConfig = {assets: []};
-    const lastRelease = {};
-    const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-    await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
-    await outputFile('package.json', "{name: 'test-package'}");
-    await outputFile('package-lock.json', "{name: 'test-package'}");
-    await outputFile('npm-shrinkwrap.json', "{name: 'test-package'}");
-
-    await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
-
-    // Verify no files have been commited
-    t.deepEqual(await gitCommitedFiles(), []);
-    t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-    t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
-  }
-);
+  // Verify no files have been commited
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
+  t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
+  t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
+});
 
 test.serial('Allow to customize the commit message', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}
 
 Last release: \${lastRelease.version}
 \${nextRelease.notes}`,
   };
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {version: 'v1.0.0'};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
-  await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
+  await outputFile(path.resolve(cwd, 'CHANGELOG.md'), 'Initial CHANGELOG');
 
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify the files that have been commited
-  t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md']);
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['CHANGELOG.md']);
   // Verify the commit message contains on the new release notes
-  const [commit] = await gitGetCommits();
-  t.is(commit.subject, `Release version ${nextRelease.version} from branch ${t.context.branch}`);
+  const [commit] = await gitGetCommits(undefined, {cwd, env});
+  t.is(commit.subject, `Release version ${nextRelease.version} from branch ${options.branch}`);
   t.is(commit.body, `Last release: ${lastRelease.version}\n${nextRelease.notes}\n`);
 });
 
-test.serial('Commit files matching the patterns in "assets"', async t => {
+test('Commit files matching the patterns in "assets"', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     assets: ['file1.js', '*1.js', ['dir/*.js', '!dir/*.css'], 'file5.js', 'dir2', ['**/*.js', '!**/*.js']],
   };
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-
   // Create .gitignore to ignore file5.js
-  await outputFile('.gitignore', 'file5.js');
-  await outputFile('file1.js', 'Test content');
-  await outputFile('dir/file2.js', 'Test content');
-  await outputFile('dir/file3.css', 'Test content');
-  await outputFile('file4.js', 'Test content');
-  await outputFile('file5.js', 'Test content');
-  await outputFile('dir2/file6.js', 'Test content');
-  await outputFile('dir2/file7.css', 'Test content');
+  await outputFile(path.resolve(cwd, '.gitignore'), 'file5.js');
+  await outputFile(path.resolve(cwd, 'file1.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir/file2.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir/file3.css'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file4.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file5.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir2/file6.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir2/file7.css'), 'Test content');
 
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify file2 and file1 have been commited
   // file4.js is excluded as no glob matching
@@ -132,31 +120,32 @@ test.serial('Commit files matching the patterns in "assets"', async t => {
   // file5.js is not ignored even if it's in the .gitignore
   // file6.js and file7.css are included because dir2 is expanded
   t.deepEqual(
-    (await gitCommitedFiles()).sort(),
+    (await gitCommitedFiles('HEAD', {cwd, env})).sort(),
     ['dir/file2.js', 'dir2/file6.js', 'dir2/file7.css', 'file1.js', 'file5.js'].sort()
   );
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
 });
 
-test.serial('Commit files matching the patterns in "assets" as Objects', async t => {
+test('Commit files matching the patterns in "assets" as Objects', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     assets: ['file1.js', {path: ['dir/*.js', '!dir/*.css']}, {path: 'file5.js'}, 'dir2'],
   };
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-
   // Create .gitignore to ignore file5.js
-  await outputFile('.gitignore', 'file5.js');
+  await outputFile(path.resolve(cwd, '.gitignore'), 'file5.js');
+  await outputFile(path.resolve(cwd, 'file1.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir/file2.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir/file3.css'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file4.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file5.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir2/file6.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir2/file7.css'), 'Test content');
 
-  await outputFile('file1.js', 'Test content');
-  await outputFile('dir/file2.js', 'Test content');
-  await outputFile('dir/file3.css', 'Test content');
-  await outputFile('file4.js', 'Test content');
-  await outputFile('file5.js', 'Test content');
-  await outputFile('dir2/file6.js', 'Test content');
-  await outputFile('dir2/file7.css', 'Test content');
-
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify file2 and file1 have been commited
   // file4.js is excluded as no glob matching
@@ -164,85 +153,95 @@ test.serial('Commit files matching the patterns in "assets" as Objects', async t
   // file5.js is not ignored even if it's in the .gitignore
   // file6.js and file7.css are included because dir2 is expanded
   t.deepEqual(
-    (await gitCommitedFiles()).sort(),
+    (await gitCommitedFiles('HEAD', {cwd, env})).sort(),
     ['dir/file2.js', 'dir2/file6.js', 'dir2/file7.css', 'file1.js', 'file5.js'].sort()
   );
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
 });
 
-test.serial('Commit files matching the patterns in "assets" as single glob', async t => {
+test('Commit files matching the patterns in "assets" as single glob', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: 'dist/**/*.js'};
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'dist/file1.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dist/file2.css'), 'Test content');
 
-  await outputFile('dist/file1.js', 'Test content');
-  await outputFile('dist/file2.css', 'Test content');
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
-
-  t.deepEqual(await gitCommitedFiles(), ['dist/file1.js']);
-
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['dist/file1.js']);
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test.serial('Commit files matching the patterns in "assets", including dot files', async t => {
+test('Commit files matching the patterns in "assets", including dot files', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: 'dist'};
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'dist/.dotfile'), 'Test content');
 
-  await outputFile('dist/.dotfile', 'Test content');
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
-
-  t.deepEqual(await gitCommitedFiles(), ['dist/.dotfile']);
-
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['dist/.dotfile']);
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test.serial('Set the commit author and committer name/email based on environment variables', async t => {
-  process.env.GIT_AUTHOR_NAME = 'author name';
-  process.env.GIT_AUTHOR_EMAIL = 'author email';
-  process.env.GIT_COMMITTER_NAME = 'committer name';
-  process.env.GIT_COMMITTER_EMAIL = 'committer email';
+test('Set the commit author and committer name/email based on environment variables', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {
+    GIT_AUTHOR_NAME: 'author name',
+    GIT_AUTHOR_EMAIL: 'author email',
+    GIT_COMMITTER_NAME: 'committer name',
+    GIT_COMMITTER_EMAIL: 'committer email',
+  };
   const lastRelease = {version: 'v1.0.0'};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
-  await outputFile('CHANGELOG.md', 'Initial CHANGELOG');
+  await outputFile(path.resolve(cwd, 'CHANGELOG.md'), 'Initial CHANGELOG');
 
-  await prepare({}, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
+  await prepare({}, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify the files that have been commited
-  t.deepEqual(await gitCommitedFiles(), ['CHANGELOG.md']);
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['CHANGELOG.md']);
   // Verify the commit message contains on the new release notes
-  const [commit] = await gitGetCommits();
+  const [commit] = await gitGetCommits(undefined, {cwd, env});
   t.is(commit.author.name, 'author name');
   t.is(commit.author.email, 'author email');
   t.is(commit.committer.name, 'committer name');
   t.is(commit.committer.email, 'committer email');
 });
 
-test.serial('Skip negated pattern if its alone in its group', async t => {
+test('Skip negated pattern if its alone in its group', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: ['!**/*', 'file.js']};
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'file.js'), 'Test content');
 
-  await outputFile('file.js', 'Test content');
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
-
-  t.deepEqual(await gitCommitedFiles(), ['file.js']);
-
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['file.js']);
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test.serial('Skip commit if there is no files to commit', async t => {
+test('Skip commit if there is no files to commit', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {};
+  const options = {repositoryUrl, branch: 'master'};
+  const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
 
-  await prepare(pluginConfig, {options: t.context.options, lastRelease, nextRelease, logger: t.context.logger});
+  await prepare(pluginConfig, {cwd, env, options, lastRelease, nextRelease, logger: t.context.logger});
 
   // Verify the files that have been commited
-  t.deepEqual(await gitCommitedFiles(), []);
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
   t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
   t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
