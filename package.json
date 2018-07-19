@@ -22,6 +22,7 @@
     "dir-glob": "^2.0.0",
     "execa": "^0.10.0",
     "fs-extra": "^7.0.0",
+    "globby": "^8.0.1",
     "lodash": "^4.17.4",
     "micromatch": "^3.1.4",
     "p-reduce": "^1.0.0"
