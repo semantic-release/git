@@ -40,13 +40,8 @@ test('Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.j
   t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
   t.is(commit.body, `${nextRelease.notes}\n`);
   t.is(commit.gitTags, `(HEAD -> ${options.branch})`);
-  t.deepEqual(t.context.log.args[0], ['Add %s to the release commit', changelogPath]);
-  t.deepEqual(t.context.log.args[1], ['Add %s to the release commit', pkgPath]);
-  t.deepEqual(t.context.log.args[2], ['Add %s to the release commit', pkgLockPath]);
-  t.deepEqual(t.context.log.args[3], ['Add %s to the release commit', shrinkwrapPath]);
-  t.deepEqual(t.context.log.args[4], ['Found %d file(s) to commit', 4]);
-  t.deepEqual(t.context.log.args[5], ['Creating tag %s', nextRelease.gitTag]);
-  t.deepEqual(t.context.log.args[6], ['Prepared Git release: %s', nextRelease.gitTag]);
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 4]);
+  t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it', async t => {
@@ -65,8 +60,6 @@ test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.
 
   // Verify no files have been commited
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
-  t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-  t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
 test.serial('Allow to customize the commit message', async t => {
@@ -242,6 +235,4 @@ test('Skip commit if there is no files to commit', async t => {
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
-  t.deepEqual(t.context.log.args[0], ['Creating tag %s', nextRelease.gitTag]);
-  t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
