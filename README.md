@@ -19,7 +19,13 @@ Create a release commit, including configurable files.
 
 ## Configuration
 
-## Environment variables
+### Git authentication
+
+The Git user associated with the [Git credentials](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/ci-configuration.md#authentication) has to be able to push commit to the [release branch](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/configuration.md#branch).
+
+When configuring branches permission on a Git hosting service (e.g. [GitHub protected branches](https://help.github.com/articles/about-protected-branches), [GitLab protected branches](https://docs.gitlab.com/ee/user/project/protected_branches.html) or [Bitbucket branch permissions](https://confluence.atlassian.com/bitbucket/branch-permissions-385912271.html)) it might be necessary to create a specific configuration in order to allow the **semantic-release** user to bypass global restrictions. For example on GitHub you can uncheck "Include administrators" and configure **semantic-release** to use an administrator user, so the plugin can push the release commit without requiring [status checks](https://help.github.com/articles/about-required-status-checks) and [pull request reviews](https://help.github.com/articles/about-required-reviews-for-pull-requests).
+
+### Environment variables
 
 | Variable              | Description                                                                                                                                                              | Default                              |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
