@@ -19,6 +19,10 @@ Create a release commit, including configurable files.
 
 ## Configuration
 
+This plugin requires permissions depending on your setup.
+
+* *Branch Protection:* If dealing with branch protection, the user used to push changes to git must have Admin access (applies for token and normal based authentication). If the user does not have admin access, the release will fail because this plugin will be unable to push the changes to master.
+
 ## Environment variables
 
 | Variable              | Description                                                                                                                                                              | Default                              |
