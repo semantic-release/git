@@ -60,7 +60,7 @@ export async function initBareRepo(repositoryUrl, branch = 'master') {
  * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
  */
 export async function gitCommits(messages, execaOpts) {
-  await pReduce(messages, async (_, message) =>
+  await pReduce(messages, (_, message) =>
     execa.stdout('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOpts)
   );
   return (await gitGetCommits(undefined, execaOpts)).slice(0, messages.length);

@@ -4,7 +4,7 @@ const prepareGit = require('./lib/prepare');
 
 let verified;
 
-async function verifyConditions(pluginConfig, context) {
+function verifyConditions(pluginConfig, context) {
   const {options} = context;
   // If the Git prepare plugin is used and has `assets` or `message` configured, validate them now in order to prevent any release if the configuration is wrong
   if (options.prepare) {
@@ -14,13 +14,13 @@ async function verifyConditions(pluginConfig, context) {
     pluginConfig.assets = defaultTo(pluginConfig.assets, preparePlugin.assets);
     pluginConfig.message = defaultTo(pluginConfig.message, preparePlugin.message);
   }
-  await verifyGit(pluginConfig);
+  verifyGit(pluginConfig);
   verified = true;
 }
 
 async function prepare(pluginConfig, context) {
   if (!verified) {
-    await verifyGit(pluginConfig);
+    verifyGit(pluginConfig);
     verified = true;
   }
   await prepareGit(pluginConfig, context);
