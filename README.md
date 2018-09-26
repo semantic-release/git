@@ -1,6 +1,6 @@
 # @semantic-release/git
 
-Set of [Semantic-release](https://github.com/semantic-release/semantic-release) plugins for publishing to a [git](https://git-scm.com/) repository.
+[**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to commit release assets to the project's [git](https://git-scm.com/) repository.
 
 [![Travis](https://img.shields.io/travis/semantic-release/git.svg)](https://travis-ci.org/semantic-release/git)
 [![Codecov](https://img.shields.io/codecov/c/github/semantic-release/git.svg)](https://codecov.io/gh/semantic-release/git)
@@ -9,13 +9,37 @@ Set of [Semantic-release](https://github.com/semantic-release/semantic-release) 
 [![npm latest version](https://img.shields.io/npm/v/@semantic-release/git/latest.svg)](https://www.npmjs.com/package/@semantic-release/git)
 [![npm next version](https://img.shields.io/npm/v/@semantic-release/git/next.svg)](https://www.npmjs.com/package/@semantic-release/git)
 
-## verifyConditions
+| Step               | Description                                                                                                                        |
+|--------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `verifyConditions` | Verify the access to the remote Git repository, the commit [`message`](#message) and the [`assets`](#assets) option configuration. |
+| `prepare`          | Create a release commit, including configurable file assets.                                                                       |
 
-Verify the access to the remote Git repository, the commit `message` format and the `assets` option configuration.
+## Install
 
-## prepare
+```bash
+$ npm install @semantic-release/git -D
+```
 
-Create a release commit, including configurable files.
+## Usage
+
+The plugin can be configured in the [**semantic-release** configuration file](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/configuration.md#configuration):
+
+```json
+{
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/git", {
+      "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    }]
+  ]
+}
+```
+
+With this example, for each release a release commit will be pushed to the remote Git repository with:
+- a message formatted like `chore(release): <version> [skip ci]\n\n<release notes>`
+- the `.js` and `.css` files in the `dist` directory, the files in the `docs` directory and the `package.json`
 
 ## Configuration
 
@@ -36,12 +60,10 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 ### Options
 
-| Options        | Description                                                    | Default                                                                        |
-| -------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------|
-| `message`      | The message for the release commit. See [message](#message).   | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
-| `assets`       | Files to include in the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
-
-**Note**: If you use a [shareable configuration](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/shareable-configurations.md#shareable-configurations) that defines one of these options you can set it to `false` in your [**semantic-release** configuration](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/configuration.md#configuration) in order to use the default value.
+| Options   | Description                                                                                                                  | Default                                                                        |
+|-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
+| `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
 
 #### `message`
 
@@ -86,38 +108,21 @@ If a directory is configured, all the files under this directory and its childre
 
 `[['dist/**/*.{js,css}', '!**/*.min.*']]`: include all `js` and `css` files in the `dist` directory and its sub-directories excluding the minified version.
 
-### Usage
+### Examples
 
-Options can be set within the plugin definition in the Semantic-release configuration file:
-
-```json
-{
-  "release": {
-    "prepare": [
-      "@semantic-release/npm",
-      {
-        "path": "@semantic-release/git",
-        "assets": ["package.json", "dist/**/*.{js,css}", "docs"],
-        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-      }
-    ],
-    "publish": ["@semantic-release/github"]
-  }
-}
-```
-
-When using with the [changelog](https://github.com/semantic-release/changelog) or [npm](https://github.com/semantic-release/npm) plugins:
-- The [changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the [git](https://github.com/semantic-release/git) and [npm](https://github.com/semantic-release/npm) plugin can include it in the release.
-- The [npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the [git](https://github.com/semantic-release/git) plugin can include it in the release commit.
-
-To use with the [changelog](https://github.com/semantic-release/changelog) and [npm](https://github.com/semantic-release/npm) plugins:
+When used with the [@semantic-release/changelog](https://github.com/semantic-release/changelog) or [@semantic-release/npm](https://github.com/semantic-release/npm) plugins:
+- The [@semantic-release/changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the `@semantic-release/git` and [@semantic-release/npm](https://github.com/semantic-release/npm) plugins can include it in the release.
+- The [@semantic-release/npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the `@semantic-release/git` plugin can include it in the release commit.
 
 ```json
 {
-  "release": {
-    "verifyConditions": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git"],
-    "prepare": ["@semantic-release/changelog", "@semantic-release/npm", "@semantic-release/git"]
-  }
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/npm",
+    "@semantic-release/git"
+  ],
 }
 ```
 
