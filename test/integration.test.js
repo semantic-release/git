@@ -24,7 +24,7 @@ test.beforeEach(t => {
 });
 
 test('Prepare from a shallow clone', async t => {
-  const branch = 'master';
+  const branch = {name: 'master'};
   let {cwd, repositoryUrl} = await gitRepo(true);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '1.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Initial content');
@@ -32,7 +32,7 @@ test('Prepare from a shallow clone', async t => {
   await add('.', {cwd});
   await gitCommits(['First'], {cwd});
   await gitTagVersion('v1.0.0', undefined, {cwd});
-  await push(repositoryUrl, branch, {cwd});
+  await push(repositoryUrl, branch.name, {cwd});
   cwd = await gitShallowClone(repositoryUrl);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '2.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Updated content');
@@ -45,20 +45,21 @@ test('Prepare from a shallow clone', async t => {
   };
   await t.context.m.prepare(pluginConfig, {
     cwd,
-    options: {repositoryUrl, branch},
+    branch,
+    options: {repositoryUrl},
     nextRelease,
     logger: t.context.logger,
   });
 
   t.deepEqual((await gitCommitedFiles('HEAD', {cwd})).sort(), ['dist/file.js', 'package.json'].sort());
   const [commit] = await gitGetCommits(undefined, {cwd});
-  t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
+  t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch.name}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
-  t.is(commit.gitTags, `(HEAD -> ${branch})`);
+  t.is(commit.gitTags, `(HEAD -> ${branch.name})`);
 });
 
 test('Prepare from a detached head repository', async t => {
-  const branch = 'master';
+  const branch = {name: 'master'};
   let {cwd, repositoryUrl} = await gitRepo(true);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '1.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Initial content');
@@ -66,7 +67,7 @@ test('Prepare from a detached head repository', async t => {
   await add('.', {cwd});
   const [{hash}] = await gitCommits(['First'], {cwd});
   await gitTagVersion('v1.0.0', undefined, {cwd});
-  await push(repositoryUrl, branch, {cwd});
+  await push(repositoryUrl, branch.name, {cwd});
   cwd = await gitDetachedHead(repositoryUrl, hash);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '2.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Updated content');
@@ -79,26 +80,27 @@ test('Prepare from a detached head repository', async t => {
   };
   await t.context.m.prepare(pluginConfig, {
     cwd,
-    options: {repositoryUrl, branch},
+    branch,
+    options: {repositoryUrl},
     nextRelease,
     logger: t.context.logger,
   });
 
   t.deepEqual((await gitCommitedFiles('HEAD', {cwd})).sort(), ['dist/file.js', 'package.json'].sort());
   const [commit] = await gitGetCommits(undefined, {cwd});
-  t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch}`);
+  t.is(commit.subject, `Release version ${nextRelease.version} from branch ${branch.name}`);
   t.is(commit.body, `${nextRelease.notes}\n`);
   t.is(commit.gitTags, `(HEAD)`);
 });
 
 test('Verify authentication only on the fist call', async t => {
-  const branch = 'master';
+  const branch = {name: 'master'};
   const {cwd, repositoryUrl} = await gitRepo(true);
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-  const options = {repositoryUrl, branch, prepare: ['@semantic-release/npm']};
+  const options = {repositoryUrl, prepare: ['@semantic-release/npm']};
 
   t.notThrows(() => t.context.m.verifyConditions({}, {cwd, options, logger: t.context.logger}));
-  await t.context.m.prepare({}, {cwd, options: {repositoryUrl, branch}, nextRelease, logger: t.context.logger});
+  await t.context.m.prepare({}, {cwd, options: {repositoryUrl}, branch, nextRelease, logger: t.context.logger});
 });
 
 test('Throw SemanticReleaseError if prepare config is invalid', t => {

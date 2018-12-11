@@ -69,11 +69,16 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 The message for the release commit is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
 
-| Parameter     | Description                                                                         |
-|---------------|-------------------------------------------------------------------------------------|
-| `branch`      | The branch from which the release is done.                                          |
-| `lastRelease` | `Object` with `version`, `gitTag` and `gitHead` of the last release.                |
-| `nextRelease` | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done. |
+| Parameter           | Description                                                                                                                             |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `branch`            | The branch from which the release is done.                                                                                              |
+| `branch.name`       | The branch name.                                                                                                                        |
+| `branch.type`       | The [type of branch](https://github.com/semantic-release/semantic-release/blob/beta/docs/usage/workflow-configuration.md#branch-types). |
+| `branch.channel`    | The distribution channel on which to publish releases from this branch.                                                                 |
+| `branch.range`      | The range of [semantic versions](https://semver.org) to support on this branch.                                                         |
+| `branch.prerelease` | The pre-release detonation to append to [semantic versions](https://semver.org) released from this branch.                              |
+| `lastRelease`       | `Object` with `version`, `gitTag` and `gitHead` of the last release.                                                                    |
+| `nextRelease`       | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done.                                                     |
 
 **Note**: It is recommended to include `[skip ci]` in the commit message to not trigger a new build. Some CI service support the `[skip ci]` keyword only in the subject of the message.
 
