@@ -75,7 +75,7 @@
     "all": true
   },
   "peerDependencies": {
-    "semantic-release": ">=15.4.0 <16.0.0"
+    "semantic-release": "^16.0.0-beta.2"
   },
   "prettier": {
     "printWidth": 120,
