@@ -75,8 +75,7 @@ The message for the release commit is generated with [Lodash template](https://l
 | `lastRelease` | `Object` with `version`, `gitTag` and `gitHead` of the last release.                |
 | `nextRelease` | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done. |
 
-It is recommended to include `[skip ci]` in the commit message to not trigger a new build.
-**Note**: Some CI service support the `[skip ci]` keyword only in the subject of the message.
+**Note**: It is recommended to include `[skip ci]` in the commit message to not trigger a new build. Some CI service support the `[skip ci]` keyword only in the subject of the message.
 
 ##### `message` examples
 
