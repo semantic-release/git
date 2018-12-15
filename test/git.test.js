@@ -84,7 +84,7 @@ test('Throw error if the last commit sha cannot be found', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
 
-  await t.throws(gitHead({cwd}));
+  await t.throwsAsync(gitHead({cwd}));
 });
 
 test('Push commit to remote repository', async t => {
