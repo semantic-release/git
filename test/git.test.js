@@ -47,6 +47,16 @@ test('Returns [] if there is no modified files', async t => {
   await t.deepEqual(await filterModifiedFiles(['file1.js', 'file2.js'], {cwd}), []);
 });
 
+test('Returns [] if there is no files for which to check modification', async t => {
+  // Create a git repository, set the current working directory at the root of the repo
+  const {cwd} = await gitRepo();
+  // Create files
+  await outputFile(path.resolve(cwd, 'file1.js'), '');
+  await outputFile(path.resolve(cwd, 'dir/file2.js'), '');
+
+  await t.deepEqual(await filterModifiedFiles([], {cwd}), []);
+});
+
 test('Commit added files', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
