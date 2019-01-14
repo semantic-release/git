@@ -14,6 +14,7 @@ function verifyConditions(pluginConfig, context) {
     pluginConfig.assets = defaultTo(pluginConfig.assets, preparePlugin.assets);
     pluginConfig.message = defaultTo(pluginConfig.message, preparePlugin.message);
   }
+
   verifyGit(pluginConfig);
   verified = true;
 }
@@ -23,6 +24,7 @@ async function prepare(pluginConfig, context) {
     verifyGit(pluginConfig);
     verified = true;
   }
+
   await prepareGit(pluginConfig, context);
 }
 
