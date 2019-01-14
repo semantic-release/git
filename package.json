@@ -40,7 +40,7 @@
     "semantic-release": "^16.0.0-beta",
     "sinon": "^7.1.1",
     "tempy": "^0.2.1",
-    "xo": "^0.23.0"
+    "xo": "^0.24.0"
   },
   "engines": {
     "node": ">=8.3"
