@@ -31,7 +31,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
     "@semantic-release/release-notes-generator",
     ["@semantic-release/git", {
       "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
-      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      "pushStep": "prepare"
     }]
   ]
 }
@@ -64,6 +65,7 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 |-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
 | `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `pushStep`| The lifecycle phase at which the created git commit will be pushed to the remote repository.                                 | `prepare`                                                                      |
 
 #### `message`
 
@@ -106,6 +108,10 @@ If a directory is configured, all the files under this directory and its childre
 `[['dist', '!**/*.css'], 'package.json']`: include `package.json` and all files in the `dist` directory and its sub-directories excluding the `css` files.
 
 `[['dist/**/*.{js,css}', '!**/*.min.*']]`: include all `js` and `css` files in the `dist` directory and its sub-directories excluding the minified version.
+
+#### `pushStep`
+
+Can be either `prepare` or `publish`.
 
 ### Examples
 

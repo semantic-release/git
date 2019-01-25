@@ -59,6 +59,26 @@ test('Verify "assets" is an Array of Object with a glob Arrays in path property'
   t.notThrows(() => verify({assets}));
 });
 
+test('Verify "pushStep" as "prepare"', t => {
+  const pushStep = 'prepare';
+
+  t.notThrows(() => verify({pushStep}));
+});
+
+test('Verify "pushStep" as "publish"', t => {
+  const pushStep = 'publish';
+
+  t.notThrows(() => verify({pushStep}));
+});
+
+test('Throw SemanticReleaseError if "pushStep" option is "success"', t => {
+  const pushStep = 'success';
+  const [error] = t.throws(() => verify({pushStep}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDPUSHSTEP');
+});
+
 test('Throw SemanticReleaseError if "message" option is not a String', t => {
   const message = 42;
   const [error] = t.throws(() => verify({message}));
@@ -83,6 +103,6 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', t 
   t.is(error.code, 'EINVALIDMESSAGE');
 });
 
-test('Verify undefined "message" and "assets"', t => {
+test('Verify undefined "message" and "assets" and "pushStep"', t => {
   t.notThrows(() => verify({}));
 });
