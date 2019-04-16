@@ -36,7 +36,7 @@
     "file-url": "^3.0.0",
     "get-stream": "^5.0.0",
     "git-log-parser": "^1.2.0",
-    "nyc": "^13.1.0",
+    "nyc": "^14.0.0",
     "semantic-release": "^15.0.0",
     "sinon": "^7.1.1",
     "tempy": "^0.2.1",
