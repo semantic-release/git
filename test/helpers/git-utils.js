@@ -60,8 +60,10 @@ export async function initBareRepo(repositoryUrl, branch = 'master') {
  * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
  */
 export async function gitCommits(messages, execaOpts) {
-  await pReduce(messages, (_, message) =>
-    execa.stdout('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOpts)
+  await pReduce(
+    messages,
+    async (_, message) =>
+      (await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOpts)).stdout
   );
   return (await gitGetCommits(undefined, execaOpts)).slice(0, messages.length);
 }
@@ -151,7 +153,7 @@ export async function gitDetachedHead(repositoryUrl, head) {
  * @return {String} The HEAD sha of the remote repository.
  */
 export async function gitRemoteHead(repositoryUrl, execaOpts) {
-  return (await execa.stdout('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOpts))
+  return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOpts)).stdout
     .split('\n')
     .filter(head => Boolean(head))
     .map(head => head.match(/^(\S+)/)[1])[0];
@@ -165,7 +167,7 @@ export async function gitRemoteHead(repositoryUrl, execaOpts) {
  * @return {Array<String>} Array of staged files path.
  */
 export async function gitStaged(execaOpts) {
-  return (await execa.stdout('git', ['status', '--porcelain'], execaOpts))
+  return (await execa('git', ['status', '--porcelain'], execaOpts)).stdout
     .split('\n')
     .filter(status => status.startsWith('A '))
     .map(status => status.match(/^A\s+(.+)$/)[1]);
@@ -180,7 +182,7 @@ export async function gitStaged(execaOpts) {
  * @return {Array<String>} The list of files path included in the commit.
  */
 export async function gitCommitedFiles(ref = 'HEAD', execaOpts) {
-  return (await execa.stdout('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOpts))
+  return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOpts)).stdout
     .split('\n')
     .filter(file => Boolean(file));
 }
