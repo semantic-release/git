@@ -28,7 +28,7 @@
     "aggregate-error": "^3.0.0",
     "debug": "^4.0.0",
     "dir-glob": "^2.0.0",
-    "execa": "^2.0.0",
+    "execa": "^1.0.0",
     "fs-extra": "^8.0.0",
     "globby": "^9.0.0",
     "lodash": "^4.17.4",
