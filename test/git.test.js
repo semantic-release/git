@@ -1,6 +1,6 @@
 import path from 'path';
 import test from 'ava';
-import {outputFile, appendFile, remove} from 'fs-extra';
+import {outputFile, appendFile, remove, move} from 'fs-extra';
 import {add, filterModifiedFiles, commit, gitHead, push} from '../lib/git';
 import {gitRepo, gitCommits, gitGetCommits, gitStaged, gitRemoteHead} from './helpers/git-utils';
 
@@ -54,6 +54,25 @@ test('Filter modified files, keep deleted files', async t => {
   await remove(path.resolve(cwd, 'file3.js'));
 
   await t.deepEqual((await filterModifiedFiles(['file1.js'], {cwd})).sort(), ['file1.js', 'file3.js'].sort());
+});
+
+test('Filter modified files, keep moved files', async t => {
+  // Create a git repository, set the current working directory at the root of the repo
+  const {cwd} = await gitRepo();
+  // Create files
+  await outputFile(path.resolve(cwd, 'file3.js'), '');
+  // Add files and commit
+  await add(['.'], {cwd});
+  await commit('test remove', {cwd});
+
+  // Move file
+  await outputFile(path.resolve(cwd, 'file1.js'), '');
+  await move(path.resolve(cwd, 'file3.js'), path.resolve(cwd, 'file4.js'));
+
+  await t.deepEqual(
+    (await filterModifiedFiles(['file1.js', 'file4.js'], {cwd})).sort(),
+    ['file1.js', 'file3.js', 'file4.js'].sort()
+  );
 });
 
 test('Returns [] if there is no modified files', async t => {
