@@ -91,10 +91,10 @@ export async function gitGetCommits(from, execaOpts) {
  * Checkout a branch on the current git repository.
  *
  * @param {String} branch Branch name.
- * @param {Boolean} create `true` to create the branch, `false` to checkout an existing branch.
+ * @param {Boolean} create to create the branch, `false` to checkout an existing branch.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-export async function gitCheckout(branch, create = true, execaOpts) {
+export async function gitCheckout(branch, create, execaOpts) {
   await execa('git', create ? ['checkout', '-b', branch] : ['checkout', branch], execaOpts);
 }
 
@@ -176,12 +176,12 @@ export async function gitStaged(execaOpts) {
 /**
  * Get the list of files included in a commit.
  *
- * @param {String} [ref='HEAD'] The git reference for which to retrieve the files.
+ * @param {String} ref The git reference for which to retrieve the files.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  *
  * @return {Array<String>} The list of files path included in the commit.
  */
-export async function gitCommitedFiles(ref = 'HEAD', execaOpts) {
+export async function gitCommitedFiles(ref, execaOpts) {
   return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOpts)).stdout
     .split('\n')
     .filter(file => Boolean(file));
