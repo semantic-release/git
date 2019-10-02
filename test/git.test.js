@@ -94,5 +94,5 @@ test('Push commit to remote repository', async t => {
 
   await push(repositoryUrl, 'master', {cwd});
 
-  t.is(await gitRemoteHead(repositoryUrl), hash, {cwd});
+  t.is(await gitRemoteHead(repositoryUrl, {cwd}), hash);
 });
