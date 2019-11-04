@@ -186,3 +186,24 @@ export async function gitCommitedFiles(ref, execaOpts) {
     .split('\n')
     .filter(file => Boolean(file));
 }
+
+/**
+ * Add a list of file to the Git index.
+ *
+ * @param {Array<String>} files Array of files path to add to the index.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ */
+export async function gitAdd(files, execaOpts) {
+  await execa('git', ['add', '--force', '--ignore-errors', ...files], {...execaOpts});
+}
+
+/**
+ * Push to the remote repository.
+ *
+ * @param {String} repositoryUrl The remote repository URL.
+ * @param {String} branch The branch to push.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ */
+export async function gitPush(repositoryUrl, branch, execaOpts) {
+  await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOpts);
+}
