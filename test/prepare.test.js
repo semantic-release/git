@@ -64,7 +64,7 @@ test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
 });
 
-test.serial('Allow to customize the commit message', async t => {
+test('Allow to customize the commit message', async t => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}
