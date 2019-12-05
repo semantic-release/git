@@ -158,7 +158,7 @@ export async function gitRemoteHead(repositoryUrl, execaOpts) {
   return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOpts)).stdout
     .split('\n')
     .filter(head => Boolean(head))
-    .map(head => head.match(/^(\S+)/)[1])[0];
+    .map(head => head.match(/^(?<head>\S+)/)[1])[0];
 }
 
 /**
@@ -172,7 +172,7 @@ export async function gitStaged(execaOpts) {
   return (await execa('git', ['status', '--porcelain'], execaOpts)).stdout
     .split('\n')
     .filter(status => status.startsWith('A '))
-    .map(status => status.match(/^A\s+(.+)$/)[1]);
+    .map(status => status.match(/^A\s+(?<file>.+)$/)[1]);
 }
 
 /**
