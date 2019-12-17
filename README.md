@@ -42,6 +42,14 @@ With this example, for each release a release commit will be pushed to the remot
 - a message formatted like `chore(release): <version> [skip ci]\n\n<release notes>`
 - the `.js` and `.css` files in the `dist` directory, the files in the `docs` directory and the `package.json`
 
+### Merging between semantic-release branches
+
+This plugin will, by default, create commit messages with the keyword `[skip ci]`, so they won't trigger a new unnecessary CI build. If you are using **semantic-release** with [multiple branches](https://github.com/semantic-release/semantic-release/blob/beta/docs/usage/workflow-configuration.md), when merging a branch with a head being a release commit, a CI job will be triggered on the target branch. Depending on the CI service that might create an unexpected behavior as the head of the target branch might be ignored by the build due to the `[skip ci]` keyword.
+
+To avoid any unexpected behavior we recommend to use the [`--no-ff` option](https://git-scm.com/docs/git-merge#Documentation/git-merge.txt---no-ff) when merging branches used by **semantic-release**.
+
+**Note**: This concerns only merges done between two branches configured in the [`branches` option](https://github.com/semantic-release/semantic-release/blob/beta/docs/usage/configuration.md#branches).
+
 ## Configuration
 
 ### Git authentication
