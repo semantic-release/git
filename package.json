@@ -37,7 +37,7 @@
     "get-stream": "^5.0.0",
     "git-log-parser": "^1.2.0",
     "nyc": "^15.0.0",
-    "semantic-release": "^16.0.0-beta",
+    "semantic-release": "^16.0.0",
     "sinon": "^8.0.0",
     "tempy": "^0.3.0",
     "xo": "^0.25.2"
@@ -75,7 +75,7 @@
     "all": true
   },
   "peerDependencies": {
-    "semantic-release": ">=16.0.0-beta <17.0.0"
+    "semantic-release": ">=16.0.0 <17.0.0"
   },
   "prettier": {
     "printWidth": 120,
