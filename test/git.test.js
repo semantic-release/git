@@ -1,7 +1,7 @@
 import path from 'path';
 import test from 'ava';
 import {outputFile, appendFile} from 'fs-extra';
-import {add, filterModifiedFiles, commit, gitHead, push} from '../lib/git';
+import {add, getModifiedFiles, commit, gitHead, push} from '../lib/git';
 import {gitRepo, gitCommits, gitGetCommits, gitStaged, gitRemoteHead} from './helpers/git-utils';
 
 test('Add file to index', async t => {
@@ -15,7 +15,7 @@ test('Add file to index', async t => {
   await t.deepEqual(await gitStaged({cwd}), ['file1.js']);
 });
 
-test('Filter modified files, including files in .gitignore and untracked ones', async t => {
+test('Get the modified files, including files in .gitignore but including untracked ones', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
   // Create files
@@ -35,7 +35,7 @@ test('Filter modified files, including files in .gitignore and untracked ones', 
   await outputFile(path.resolve(cwd, 'file4.js'), 'Test content');
 
   await t.deepEqual(
-    (await filterModifiedFiles(['file1.js', 'dir/file2.js', 'file3.js', 'file4.js'], {cwd})).sort(),
+    (await getModifiedFiles({cwd})).sort(),
     ['file1.js', 'dir/file2.js', 'file3.js', 'file4.js'].sort()
   );
 });
@@ -44,17 +44,7 @@ test('Returns [] if there is no modified files', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
 
-  await t.deepEqual(await filterModifiedFiles(['file1.js', 'file2.js'], {cwd}), []);
-});
-
-test('Returns [] if there is no files for which to check modification', async t => {
-  // Create a git repository, set the current working directory at the root of the repo
-  const {cwd} = await gitRepo();
-  // Create files
-  await outputFile(path.resolve(cwd, 'file1.js'), '');
-  await outputFile(path.resolve(cwd, 'dir/file2.js'), '');
-
-  await t.deepEqual(await filterModifiedFiles([], {cwd}), []);
+  await t.deepEqual(await getModifiedFiles({cwd}), []);
 });
 
 test('Commit added files', async t => {

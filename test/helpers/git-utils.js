@@ -158,7 +158,7 @@ export async function gitRemoteHead(repositoryUrl, execaOpts) {
   return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOpts)).stdout
     .split('\n')
     .filter(head => Boolean(head))
-    .map(head => head.match(/^(\S+)/)[1])[0];
+    .map(head => head.match(/^(?<head>\S+)/)[1])[0];
 }
 
 /**
@@ -172,7 +172,7 @@ export async function gitStaged(execaOpts) {
   return (await execa('git', ['status', '--porcelain'], execaOpts)).stdout
     .split('\n')
     .filter(status => status.startsWith('A '))
-    .map(status => status.match(/^A\s+(.+)$/)[1]);
+    .map(status => status.match(/^A\s+(?<file>.+)$/)[1]);
 }
 
 /**
@@ -187,4 +187,25 @@ export async function gitCommitedFiles(ref, execaOpts) {
   return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOpts)).stdout
     .split('\n')
     .filter(file => Boolean(file));
+}
+
+/**
+ * Add a list of file to the Git index.
+ *
+ * @param {Array<String>} files Array of files path to add to the index.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ */
+export async function gitAdd(files, execaOpts) {
+  await execa('git', ['add', '--force', '--ignore-errors', ...files], {...execaOpts});
+}
+
+/**
+ * Push to the remote repository.
+ *
+ * @param {String} repositoryUrl The remote repository URL.
+ * @param {String} branch The branch to push.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ */
+export async function gitPush(repositoryUrl, branch, execaOpts) {
+  await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOpts);
 }
