@@ -1,10 +1,10 @@
-import path from 'path';
-import test from 'ava';
-import {outputFile} from 'fs-extra';
-import {stub} from 'sinon';
-import clearModule from 'clear-module';
-import {push, add} from '../lib/git';
-import {
+const path = require('path');
+const test = require('ava');
+const {outputFile} = require('fs-extra');
+const {stub} = require('sinon');
+const clearModule = require('clear-module');
+const {push, add} = require('../lib/git');
+const {
   gitRepo,
   gitCommits,
   gitShallowClone,
@@ -12,7 +12,7 @@ import {
   gitCommitedFiles,
   gitGetCommits,
   gitTagVersion,
-} from './helpers/git-utils';
+} = require('./helpers/git-utils');
 
 test.beforeEach(t => {
   // Clear npm cache to refresh the module state

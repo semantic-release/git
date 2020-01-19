@@ -1,9 +1,9 @@
-import path from 'path';
-import test from 'ava';
-import {outputFile, remove} from 'fs-extra';
-import {stub} from 'sinon';
-import prepare from '../lib/prepare';
-import {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} from './helpers/git-utils';
+const path = require('path');
+const test = require('ava');
+const {outputFile, remove} = require('fs-extra');
+const {stub} = require('sinon');
+const prepare = require('../lib/prepare');
+const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} = require('./helpers/git-utils');
 
 test.beforeEach(t => {
   // Stub the logger functions

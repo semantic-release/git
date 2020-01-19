@@ -1,5 +1,5 @@
-import test from 'ava';
-import verify from '../lib/verify';
+const test = require('ava');
+const verify = require('../lib/verify');
 
 test('Throw SemanticReleaseError if "assets" option is not a String or false or an Array of Objects', t => {
   const assets = true;

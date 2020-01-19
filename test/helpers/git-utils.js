@@ -1,9 +1,9 @@
-import tempy from 'tempy';
-import execa from 'execa';
-import fileUrl from 'file-url';
-import pReduce from 'p-reduce';
-import gitLogParser from 'git-log-parser';
-import getStream from 'get-stream';
+const tempy = require('tempy');
+const execa = require('execa');
+const fileUrl = require('file-url');
+const pReduce = require('p-reduce');
+const gitLogParser = require('git-log-parser');
+const getStream = require('get-stream');
 
 /**
  * Create a temporary git repository.
@@ -14,7 +14,7 @@ import getStream from 'get-stream';
  * @param {String} [branch='master'] The branch to initialize.
  * @return {String} The path of the clone if `withRemote` is `true`, the path of the repository otherwise.
  */
-export async function gitRepo(withRemote, branch = 'master') {
+async function gitRepo(withRemote, branch = 'master') {
   let cwd = tempy.directory();
 
   await execa('git', ['init'].concat(withRemote ? ['--bare'] : []), {cwd});
@@ -43,7 +43,7 @@ export async function gitRepo(withRemote, branch = 'master') {
  * @param {String} repositoryUrl The URL of the bare repository.
  * @param {String} [branch='master'] the branch to initialize.
  */
-export async function initBareRepo(repositoryUrl, branch = 'master') {
+async function initBareRepo(repositoryUrl, branch = 'master') {
   const cwd = tempy.directory();
   await execa('git', ['clone', '--no-hardlinks', repositoryUrl, cwd], {cwd});
   await gitCheckout(branch, true, {cwd});
@@ -59,7 +59,7 @@ export async function initBareRepo(repositoryUrl, branch = 'master') {
  *
  * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
  */
-export async function gitCommits(messages, execaOpts) {
+async function gitCommits(messages, execaOpts) {
   await pReduce(
     messages,
     async (_, message) =>
@@ -76,7 +76,7 @@ export async function gitCommits(messages, execaOpts) {
  *
  * @return {Array<Object>} The list of parsed commits.
  */
-export async function gitGetCommits(from, execaOpts) {
+async function gitGetCommits(from, execaOpts) {
   Object.assign(gitLogParser.fields, {hash: 'H', message: 'B', gitTags: 'd', committerDate: {key: 'ci', type: Date}});
   return (
     await getStream.array(
@@ -96,7 +96,7 @@ export async function gitGetCommits(from, execaOpts) {
  * @param {Boolean} create to create the branch, `false` to checkout an existing branch.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-export async function gitCheckout(branch, create, execaOpts) {
+async function gitCheckout(branch, create, execaOpts) {
   await execa('git', create ? ['checkout', '-b', branch] : ['checkout', branch], execaOpts);
 }
 
@@ -107,7 +107,7 @@ export async function gitCheckout(branch, create, execaOpts) {
  * @param {String} [sha] The commit on which to create the tag. If undefined the tag is created on the last commit.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-export async function gitTagVersion(tagName, sha, execaOpts) {
+async function gitTagVersion(tagName, sha, execaOpts) {
   await execa('git', sha ? ['tag', '-f', tagName, sha] : ['tag', tagName], execaOpts);
 }
 
@@ -120,7 +120,7 @@ export async function gitTagVersion(tagName, sha, execaOpts) {
  * @param {Number} [depth=1] The number of commit to clone.
  * @return {String} The path of the cloned repository.
  */
-export async function gitShallowClone(repositoryUrl, branch = 'master', depth = 1) {
+async function gitShallowClone(repositoryUrl, branch = 'master', depth = 1) {
   const cwd = tempy.directory();
 
   await execa('git', ['clone', '--no-hardlinks', '--no-tags', '-b', branch, '--depth', depth, repositoryUrl, cwd], {
@@ -136,7 +136,7 @@ export async function gitShallowClone(repositoryUrl, branch = 'master', depth = 
  * @param {Number} head A commit sha of the remote repo that will become the detached head of the new one.
  * @return {String} The path of the new repository.
  */
-export async function gitDetachedHead(repositoryUrl, head) {
+async function gitDetachedHead(repositoryUrl, head) {
   const cwd = tempy.directory();
 
   await execa('git', ['init'], {cwd});
@@ -154,7 +154,7 @@ export async function gitDetachedHead(repositoryUrl, head) {
  *
  * @return {String} The HEAD sha of the remote repository.
  */
-export async function gitRemoteHead(repositoryUrl, execaOpts) {
+async function gitRemoteHead(repositoryUrl, execaOpts) {
   return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOpts)).stdout
     .split('\n')
     .filter(head => Boolean(head))
@@ -168,7 +168,7 @@ export async function gitRemoteHead(repositoryUrl, execaOpts) {
  *
  * @return {Array<String>} Array of staged files path.
  */
-export async function gitStaged(execaOpts) {
+async function gitStaged(execaOpts) {
   return (await execa('git', ['status', '--porcelain'], execaOpts)).stdout
     .split('\n')
     .filter(status => status.startsWith('A '))
@@ -183,7 +183,7 @@ export async function gitStaged(execaOpts) {
  *
  * @return {Array<String>} The list of files path included in the commit.
  */
-export async function gitCommitedFiles(ref, execaOpts) {
+async function gitCommitedFiles(ref, execaOpts) {
   return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOpts)).stdout
     .split('\n')
     .filter(file => Boolean(file));
@@ -195,7 +195,7 @@ export async function gitCommitedFiles(ref, execaOpts) {
  * @param {Array<String>} files Array of files path to add to the index.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-export async function gitAdd(files, execaOpts) {
+async function gitAdd(files, execaOpts) {
   await execa('git', ['add', '--force', '--ignore-errors', ...files], {...execaOpts});
 }
 
@@ -206,6 +206,22 @@ export async function gitAdd(files, execaOpts) {
  * @param {String} branch The branch to push.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-export async function gitPush(repositoryUrl, branch, execaOpts) {
+async function gitPush(repositoryUrl, branch, execaOpts) {
   await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOpts);
 }
+
+module.exports = {
+  gitRepo,
+  initBareRepo,
+  gitCommits,
+  gitGetCommits,
+  gitCheckout,
+  gitTagVersion,
+  gitShallowClone,
+  gitDetachedHead,
+  gitRemoteHead,
+  gitStaged,
+  gitCommitedFiles,
+  gitAdd,
+  gitPush,
+};
