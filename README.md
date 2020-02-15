@@ -73,6 +73,7 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 |-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
 | `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `targetBranch` | The target branch for the pull request release commit.                                                                  | `semantic-release-generated`
 
 #### `message`
 
