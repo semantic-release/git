@@ -59,13 +59,13 @@ async function initBareRepo(repositoryUrl, branch = 'master') {
  *
  * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
  */
-async function gitCommits(messages, execaOpts) {
+async function gitCommits(messages, execaOptions) {
   await pReduce(
     messages,
     async (_, message) =>
-      (await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOpts)).stdout
+      (await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOptions)).stdout
   );
-  return (await gitGetCommits(undefined, execaOpts)).slice(0, messages.length);
+  return (await gitGetCommits(undefined, execaOptions)).slice(0, messages.length);
 }
 
 /**
@@ -76,11 +76,14 @@ async function gitCommits(messages, execaOpts) {
  *
  * @return {Array<Object>} The list of parsed commits.
  */
-async function gitGetCommits(from, execaOpts) {
+async function gitGetCommits(from, execaOptions) {
   Object.assign(gitLogParser.fields, {hash: 'H', message: 'B', gitTags: 'd', committerDate: {key: 'ci', type: Date}});
   return (
     await getStream.array(
-      gitLogParser.parse({_: `${from ? from + '..' : ''}HEAD`}, {...execaOpts, env: {...process.env, ...execaOpts.env}})
+      gitLogParser.parse(
+        {_: `${from ? from + '..' : ''}HEAD`},
+        {...execaOptions, env: {...process.env, ...execaOptions.env}}
+      )
     )
   ).map(commit => {
     commit.message = commit.message.trim();
@@ -96,8 +99,8 @@ async function gitGetCommits(from, execaOpts) {
  * @param {Boolean} create to create the branch, `false` to checkout an existing branch.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-async function gitCheckout(branch, create, execaOpts) {
-  await execa('git', create ? ['checkout', '-b', branch] : ['checkout', branch], execaOpts);
+async function gitCheckout(branch, create, execaOptions) {
+  await execa('git', create ? ['checkout', '-b', branch] : ['checkout', branch], execaOptions);
 }
 
 /**
@@ -107,8 +110,8 @@ async function gitCheckout(branch, create, execaOpts) {
  * @param {String} [sha] The commit on which to create the tag. If undefined the tag is created on the last commit.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-async function gitTagVersion(tagName, sha, execaOpts) {
-  await execa('git', sha ? ['tag', '-f', tagName, sha] : ['tag', tagName], execaOpts);
+async function gitTagVersion(tagName, sha, execaOptions) {
+  await execa('git', sha ? ['tag', '-f', tagName, sha] : ['tag', tagName], execaOptions);
 }
 
 /**
@@ -154,8 +157,8 @@ async function gitDetachedHead(repositoryUrl, head) {
  *
  * @return {String} The HEAD sha of the remote repository.
  */
-async function gitRemoteHead(repositoryUrl, execaOpts) {
-  return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOpts)).stdout
+async function gitRemoteHead(repositoryUrl, execaOptions) {
+  return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOptions)).stdout
     .split('\n')
     .filter(head => Boolean(head))
     .map(head => head.match(/^(?<head>\S+)/)[1])[0];
@@ -168,8 +171,8 @@ async function gitRemoteHead(repositoryUrl, execaOpts) {
  *
  * @return {Array<String>} Array of staged files path.
  */
-async function gitStaged(execaOpts) {
-  return (await execa('git', ['status', '--porcelain'], execaOpts)).stdout
+async function gitStaged(execaOptions) {
+  return (await execa('git', ['status', '--porcelain'], execaOptions)).stdout
     .split('\n')
     .filter(status => status.startsWith('A '))
     .map(status => status.match(/^A\s+(?<file>.+)$/)[1]);
@@ -183,8 +186,8 @@ async function gitStaged(execaOpts) {
  *
  * @return {Array<String>} The list of files path included in the commit.
  */
-async function gitCommitedFiles(ref, execaOpts) {
-  return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOpts)).stdout
+async function gitCommitedFiles(ref, execaOptions) {
+  return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOptions)).stdout
     .split('\n')
     .filter(file => Boolean(file));
 }
@@ -195,8 +198,8 @@ async function gitCommitedFiles(ref, execaOpts) {
  * @param {Array<String>} files Array of files path to add to the index.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-async function gitAdd(files, execaOpts) {
-  await execa('git', ['add', '--force', '--ignore-errors', ...files], {...execaOpts});
+async function gitAdd(files, execaOptions) {
+  await execa('git', ['add', '--force', '--ignore-errors', ...files], {...execaOptions});
 }
 
 /**
@@ -206,8 +209,8 @@ async function gitAdd(files, execaOpts) {
  * @param {String} branch The branch to push.
  * @param {Object} [execaOpts] Options to pass to `execa`.
  */
-async function gitPush(repositoryUrl, branch, execaOpts) {
-  await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOpts);
+async function gitPush(repositoryUrl, branch, execaOptions) {
+  await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOptions);
 }
 
 module.exports = {
