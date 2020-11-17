@@ -2,11 +2,7 @@
 
 [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to commit release assets to the project's [git](https://git-scm.com/) repository.
 
-[![Travis](https://img.shields.io/travis/semantic-release/git.svg)](https://travis-ci.org/semantic-release/git)
-[![Codecov](https://img.shields.io/codecov/c/github/semantic-release/git.svg)](https://codecov.io/gh/semantic-release/git)
-[![Greenkeeper badge](https://badges.greenkeeper.io/semantic-release/git.svg)](https://greenkeeper.io/)
-
-[![npm latest version](https://img.shields.io/npm/v/@semantic-release/git/latest.svg)](https://www.npmjs.com/package/@semantic-release/git)
+[![Build Status](https://github.com/semantic-release/git/workflows/Test/badge.svg)](https://github.com/semantic-release/git/actions?query=workflow%3ATest+branch%3Amaster) [![npm latest version](https://img.shields.io/npm/v/@semantic-release/git/latest.svg)](https://www.npmjs.com/package/@semantic-release/git)
 [![npm next version](https://img.shields.io/npm/v/@semantic-release/git/next.svg)](https://www.npmjs.com/package/@semantic-release/git)
 [![npm beta version](https://img.shields.io/npm/v/@semantic-release/git/beta.svg)](https://www.npmjs.com/package/@semantic-release/git)
 
