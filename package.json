@@ -33,7 +33,7 @@
     "get-stream": "6.0.0",
     "git-log-parser": "1.2.0",
     "nyc": "15.1.0",
-    "semantic-release": "17.3.1",
+    "semantic-release": "17.3.2",
     "sinon": "9.2.3",
     "tempy": "1.0.0",
     "xo": "0.28.3"
