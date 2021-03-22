@@ -47,14 +47,18 @@ test('Returns [] if there is no modified files', async t => {
   await t.deepEqual(await getModifiedFiles({cwd}), []);
 });
 
-test('Commit added files', async t => {
+test('Commit added files with a huge message', async t => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
   // Create files
   await outputFile(path.resolve(cwd, 'file1.js'), '');
   // Add files and commit
   await add(['.'], {cwd});
-  await commit('Test commit', {cwd});
+  // 1 MB message should break everything, ...
+  const hugeMessage = Array.from({length: 1024 * 1024})
+    .map((_, index) => (index % 72 ? 'z' : '\n'))
+    .join('');
+  await commit(hugeMessage, {cwd});
 
   await t.true((await gitGetCommits(undefined, {cwd})).length === 1);
 });
