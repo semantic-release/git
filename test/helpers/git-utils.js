@@ -28,6 +28,7 @@ async function gitRepo(withRemote, branch = 'master') {
   }
 
   await execa('git', ['config', 'commit.gpgsign', false], {cwd});
+  await execa('git', ['config', 'receive.advertisePushOptions', true], {cwd});
 
   return {cwd, repositoryUrl};
 }

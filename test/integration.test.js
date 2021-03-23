@@ -32,7 +32,7 @@ test('Prepare from a shallow clone', async t => {
   await add('.', {cwd});
   await gitCommits(['First'], {cwd});
   await gitTagVersion('v1.0.0', undefined, {cwd});
-  await push(repositoryUrl, branch.name, {cwd});
+  await push(repositoryUrl, branch.name, undefined, {cwd});
   cwd = await gitShallowClone(repositoryUrl);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '2.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Updated content');
@@ -67,7 +67,7 @@ test('Prepare from a detached head repository', async t => {
   await add('.', {cwd});
   const [{hash}] = await gitCommits(['First'], {cwd});
   await gitTagVersion('v1.0.0', undefined, {cwd});
-  await push(repositoryUrl, branch.name, {cwd});
+  await push(repositoryUrl, branch.name, [], {cwd});
   cwd = await gitDetachedHead(repositoryUrl, hash);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '2.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Updated content');
