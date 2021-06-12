@@ -23,7 +23,7 @@
     "execa": "^4.0.0",
     "lodash": "^4.17.4",
     "micromatch": "^4.0.0",
-    "p-reduce": "^2.0.0"
+    "p-reduce": "^3.0.0"
   },
   "devDependencies": {
     "ava": "3.15.0",
