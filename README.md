@@ -69,6 +69,7 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 |-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
 | `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `pushFlags` | Optional string or array of strings holding `git push` option flags that will be applied to all push operations. Not all option flags are supported. See [pushFlags](#pushflags) for details. | `--tags` (cannot be disabled).  |
 
 #### `message`
 
@@ -116,6 +117,26 @@ If a directory is configured, all the files under this directory and its childre
 `[['dist', '!**/*.css'], 'package.json']`: include `package.json` and all files in the `dist` directory and its sub-directories excluding the `css` files.
 
 `[['dist/**/*.{js,css}', '!**/*.min.*']]`: include all `js` and `css` files in the `dist` directory and its sub-directories excluding the minified version.
+
+#### `pushFlags`
+
+Can be an `Array` or a single entry, with each string indicating a [git push](https://git-scm.com/docs/git-push) option flag to be applied to the push operation made during `prepare` step.
+
+The supported flags and aliases are shown in the table below.  Please note that the `--tags` option is always applied to push operation so does not need to be specified here.
+
+| flag | aliases | notes |
+| --- | --- | --- |
+| `--dry-run` | `dry-run`, `-n`, `n` | This is not related to `semantic-release` dry run mode. |
+| `--force` | `force`, `-f`, `f` | |
+| `--verbose` | `verbose`, `-v`, `v` | |
+
+##### `pushFlags` examples
+
+`force`: enable force push (useful for some CI configurations when pushing to protected branches)
+
+`['-f', '-v']`: enable multiple flags (`--force` + `--verbose`), in this case ters argument format.
+
+`['n']`: always perform dry run (using letter-only alias).
 
 ### Examples
 

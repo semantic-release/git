@@ -190,6 +190,23 @@ test('Commit files matching the patterns in "assets", including dot files', asyn
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
+test('Commit files using force push', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {assets: 'dist/**/*.js', pushFlags: 'force'};
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'dist/file1.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dist/file2.css'), 'Test content');
+
+  await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
+
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['dist/file1.js']);
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
+});
+
 test('Include deleted files in release commit', async t => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {

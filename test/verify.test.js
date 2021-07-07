@@ -83,6 +83,25 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', t 
   t.is(error.code, 'EINVALIDMESSAGE');
 });
 
-test('Verify undefined "message" and "assets"', t => {
+test('Throw SemanticReleaseError if "pushFlags" is not a non-empty string or array of non-empty strings', t => {
+  const testCases = [{}, {foo: 'bar'}, '', [''], []];
+
+  for (const pushFlags of testCases) {
+    const [error] = t.throws(() => verify({pushFlags}));
+
+    t.is(error.name, 'SemanticReleaseError');
+    t.is(error.code, 'EINVALIDPUSHFLAGS');
+  }
+});
+
+test('Verify "pushFlags" with strings or array of string options', t => {
+  const testCases = ['force', ['--verbose', '-n'], 'ignored', ['ignored', 'f']];
+
+  testCases.forEach(pushFlags => {
+    t.notThrows(() => verify({pushFlags}));
+  });
+});
+
+test('Verify undefined "message", "assets", and "pushFlags', t => {
   t.notThrows(() => verify({}));
 });

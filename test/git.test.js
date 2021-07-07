@@ -86,3 +86,31 @@ test('Push commit to remote repository', async t => {
 
   t.is(await gitRemoteHead(repositoryUrl, {cwd}), hash);
 });
+
+test('Push commit to remote repository with push flags', async t => {
+  // Create a git repository with a remote, set the current working directory at the root of the repo
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const [{hash}] = await gitCommits(['Test commit'], {cwd});
+
+  const testCases = [
+    [],
+    '',
+    ['f'],
+    '-f',
+    ['force'],
+    '--force',
+    ['dry-run'],
+    'verbose',
+    ['force', 'force'],
+    ['force', '-v'],
+    ['unsupported'],
+  ];
+
+  /* eslint-disable no-await-in-loop */
+  for (const flags of testCases) {
+    await push(repositoryUrl, 'master', {cwd}, flags);
+
+    t.is(await gitRemoteHead(repositoryUrl, {cwd}), hash);
+  }
+  /* eslint-enable no-await-in-loop */
+});
