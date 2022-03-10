@@ -2,10 +2,13 @@ const path = require('path');
 const test = require('ava');
 const {outputFile, remove} = require('fs-extra');
 const {stub} = require('sinon');
+const {WritableStreamBuffer} = require('stream-buffers');
 const prepare = require('../lib/prepare');
 const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} = require('./helpers/git-utils');
 
 test.beforeEach(t => {
+  t.context.stdout = new WritableStreamBuffer();
+  t.context.stderr = new WritableStreamBuffer();
   // Stub the logger functions
   t.context.log = stub();
   t.context.logger = {log: t.context.log};
@@ -269,4 +272,66 @@ test('Skip commit if there is no files to commit', async t => {
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
+});
+
+test('Execute user prePush command', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {
+    prePushCmd: `>&2 echo "write to stderr" && echo "Release version \${nextRelease.version} from branch \${branch}"`,
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {version: 'v1.0.0'};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+  await outputFile(path.resolve(cwd, 'CHANGELOG.md'), 'Initial CHANGELOG');
+
+  await prepare(pluginConfig, {
+    cwd,
+    env,
+    options,
+    branch,
+    lastRelease,
+    nextRelease,
+    stdout: t.context.stdout,
+    stderr: t.context.stderr,
+    logger: t.context.logger,
+  });
+
+  // Verify the files that have been commited
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['CHANGELOG.md']);
+
+  // Check logger and outputs
+  t.deepEqual(t.context.log.args[1], ['Executing prePushCmd: %s', pluginConfig.prePushCmd]);
+  t.is(t.context.stdout.getContentsAsString('utf8').trim(), 'Release version 2.0.0 from branch master');
+  t.is(t.context.stderr.getContentsAsString('utf8').trim(), 'write to stderr');
+});
+
+test('Fail when user prePush command fail', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {
+    prePushCmd: `exit 1`,
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {version: 'v1.0.0'};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0', notes: 'Test release note'};
+  await outputFile(path.resolve(cwd, 'CHANGELOG.md'), 'Initial CHANGELOG');
+
+  const {shortMessage} = await t.throwsAsync(() =>
+    prepare(pluginConfig, {
+      cwd,
+      env,
+      options,
+      branch,
+      lastRelease,
+      nextRelease,
+      stdout: t.context.stdout,
+      stderr: t.context.stderr,
+      logger: t.context.logger,
+    })
+  );
+
+  t.is(shortMessage, 'Command failed with exit code 1: exit 1');
 });

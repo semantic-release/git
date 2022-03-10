@@ -65,10 +65,11 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 ### Options
 
-| Options   | Description                                                                                                                  | Default                                                                        |
-|-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
-| `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| Options      | Description                                                                                                                  | Default                                                                        |
+|--------------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `message`    | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
+| `assets`     | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `prePushCmd` | The shell command to execute before push the new commit. See [prePushCmd](#prePushCmd). Set to `false` to disabled.          | `false`                                                                        |
 
 #### `message`
 
@@ -116,6 +117,20 @@ If a directory is configured, all the files under this directory and its childre
 `[['dist', '!**/*.css'], 'package.json']`: include `package.json` and all files in the `dist` directory and its sub-directories excluding the `css` files.
 
 `[['dist/**/*.{js,css}', '!**/*.min.*']]`: include all `js` and `css` files in the `dist` directory and its sub-directories excluding the minified version.
+
+#### `prePushCmd`
+
+| Command property | Description                                                                                                         |
+|------------------|---------------------------------------------------------------------------------------------------------------------|
+| `exit code`      | Any non `0` code is considered as an unexpected error and will stop the `semantic-release` execution with an error. |
+| `stdout`         | Can be used for logging.                                                                                            |
+| `stderr`         | Can be used for logging.                                                                                            |
+
+All parameters described in [message](#message) can be used in command value
+
+##### `prePushCmd` examples
+
+`"prePushCmd": "./pre-push.sh ${branch.name} ${branch.range} ${branch.prerelease}"`: Will execute `pre-push.sh` with 3 parameters (`branch.name`, `branch.range`, `branch.prerelease`)
 
 ### Examples
 

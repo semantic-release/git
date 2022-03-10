@@ -83,6 +83,27 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', t 
   t.is(error.code, 'EINVALIDMESSAGE');
 });
 
-test('Verify undefined "message" and "assets"', t => {
+test('Throw SemanticReleaseError if "prePushCmd" option is not a String', t => {
+  const prePushCmd = 42;
+  const [error] = t.throws(() => verify({prePushCmd}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDPREPUSHCMD');
+});
+
+test('Throw SemanticReleaseError if "prePushCmd" option is a whitespace String', t => {
+  const prePushCmd = '  \n \r ';
+  const [error] = t.throws(() => verify({prePushCmd}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDPREPUSHCMD');
+});
+
+test('Verify empty string "prePushCmd" option', t => {
+  const prePushCmd = '';
+  t.notThrows(() => verify({prePushCmd}));
+});
+
+test('Verify undefined "message", "assets" and "prePushCmd"', t => {
   t.notThrows(() => verify({}));
 });
