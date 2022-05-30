@@ -78,7 +78,7 @@ The message for the release commit is generated with [Lodash template](https://l
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | `branch`            | The branch from which the release is done.                                                                                              |
 | `branch.name`       | The branch name.                                                                                                                        |
-| `branch.type`       | The [type of branch](https://github.com/semantic-release/semantic-release/blob/beta/docs/usage/workflow-configuration.md#branch-types). |
+| `branch.type`       | The [type of branch](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/workflow-configuration.md#branch-types). |
 | `branch.channel`    | The distribution channel on which to publish releases from this branch.                                                                 |
 | `branch.range`      | The range of [semantic versions](https://semver.org) to support on this branch.                                                         |
 | `branch.prerelease` | The pre-release detonation to append to [semantic versions](https://semver.org) released from this branch.                              |
