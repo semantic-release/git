@@ -14,7 +14,7 @@ const {
   gitTagVersion,
 } = require('./helpers/git-utils');
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   // Clear npm cache to refresh the module state
   clearModule('..');
   t.context.m = require('..');
@@ -23,7 +23,7 @@ test.beforeEach(t => {
   t.context.logger = {log: t.context.log};
 });
 
-test('Prepare from a shallow clone', async t => {
+test('Prepare from a shallow clone', async (t) => {
   const branch = {name: 'master'};
   let {cwd, repositoryUrl} = await gitRepo(true);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '1.0.0'}");
@@ -58,7 +58,7 @@ test('Prepare from a shallow clone', async t => {
   t.is(commit.gitTags, `(HEAD -> ${branch.name})`);
 });
 
-test('Prepare from a detached head repository', async t => {
+test('Prepare from a detached head repository', async (t) => {
   const branch = {name: 'master'};
   let {cwd, repositoryUrl} = await gitRepo(true);
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '1.0.0'}");
@@ -93,7 +93,7 @@ test('Prepare from a detached head repository', async t => {
   t.is(commit.gitTags, `(HEAD)`);
 });
 
-test('Verify authentication only on the fist call', async t => {
+test('Verify authentication only on the fist call', async (t) => {
   const branch = {name: 'master'};
   const {cwd, repositoryUrl} = await gitRepo(true);
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
@@ -103,7 +103,7 @@ test('Verify authentication only on the fist call', async t => {
   await t.context.m.prepare({}, {cwd, options: {repositoryUrl}, branch, nextRelease, logger: t.context.logger});
 });
 
-test('Throw SemanticReleaseError if prepare config is invalid', t => {
+test('Throw SemanticReleaseError if prepare config is invalid', (t) => {
   const message = 42;
   const assets = true;
   const options = {prepare: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets}]};
@@ -116,7 +116,7 @@ test('Throw SemanticReleaseError if prepare config is invalid', t => {
   t.is(errors[1].code, 'EINVALIDMESSAGE');
 });
 
-test('Throw SemanticReleaseError if config is invalid', t => {
+test('Throw SemanticReleaseError if config is invalid', (t) => {
   const message = 42;
   const assets = true;
 
