@@ -4,7 +4,7 @@ const {outputFile, appendFile} = require('fs-extra');
 const {add, getModifiedFiles, commit, gitHead, push} = require('../lib/git');
 const {gitRepo, gitCommits, gitGetCommits, gitStaged, gitRemoteHead} = require('./helpers/git-utils');
 
-test('Add file to index', async t => {
+test('Add file to index', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
   // Create files
@@ -15,7 +15,7 @@ test('Add file to index', async t => {
   await t.deepEqual(await gitStaged({cwd}), ['file1.js']);
 });
 
-test('Get the modified files, including files in .gitignore but including untracked ones', async t => {
+test('Get the modified files, including files in .gitignore but including untracked ones', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
   // Create files
@@ -40,14 +40,14 @@ test('Get the modified files, including files in .gitignore but including untrac
   );
 });
 
-test('Returns [] if there is no modified files', async t => {
+test('Returns [] if there is no modified files', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
 
   await t.deepEqual(await getModifiedFiles({cwd}), []);
 });
 
-test('Commit added files', async t => {
+test('Commit added files', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
   // Create files
@@ -59,7 +59,7 @@ test('Commit added files', async t => {
   await t.true((await gitGetCommits(undefined, {cwd})).length === 1);
 });
 
-test('Get the last commit sha', async t => {
+test('Get the last commit sha', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
   // Add commits to the master branch
@@ -70,14 +70,14 @@ test('Get the last commit sha', async t => {
   t.is(result, hash);
 });
 
-test('Throw error if the last commit sha cannot be found', async t => {
+test('Throw error if the last commit sha cannot be found', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
 
   await t.throwsAsync(gitHead({cwd}));
 });
 
-test('Push commit to remote repository', async t => {
+test('Push commit to remote repository', async (t) => {
   // Create a git repository with a remote, set the current working directory at the root of the repo
   const {cwd, repositoryUrl} = await gitRepo(true);
   const [{hash}] = await gitCommits(['Test commit'], {cwd});
