@@ -2,8 +2,8 @@ const path = require('path');
 const test = require('ava');
 const {outputFile, remove} = require('fs-extra');
 const {stub} = require('sinon');
-const prepare = require('../lib/prepare');
-const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} = require('./helpers/git-utils');
+const prepare = require('../lib/prepare.js');
+const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} = require('./helpers/git-utils.js');
 
 test.beforeEach((t) => {
   // Stub the logger functions

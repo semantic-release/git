@@ -17,7 +17,7 @@ const getStream = require('get-stream');
 async function gitRepo(withRemote, branch = 'master') {
   let cwd = tempy.directory();
 
-  await execa('git', ['init'].concat(withRemote ? ['--bare'] : []), {cwd});
+  await execa('git', ['init', ...(withRemote ? ['--bare'] : [])], {cwd});
 
   const repositoryUrl = fileUrl(cwd);
   if (withRemote) {
@@ -63,7 +63,9 @@ async function gitCommits(messages, execaOptions) {
   await pReduce(
     messages,
     async (_, message) =>
-      (await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOptions)).stdout
+      (
+        await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOptions)
+      ).stdout
   );
   return (await gitGetCommits(undefined, execaOptions)).slice(0, messages.length);
 }

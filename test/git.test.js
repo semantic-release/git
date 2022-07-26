@@ -1,8 +1,8 @@
 const path = require('path');
 const test = require('ava');
 const {outputFile, appendFile} = require('fs-extra');
-const {add, getModifiedFiles, commit, gitHead, push} = require('../lib/git');
-const {gitRepo, gitCommits, gitGetCommits, gitStaged, gitRemoteHead} = require('./helpers/git-utils');
+const {add, getModifiedFiles, commit, gitHead, push} = require('../lib/git.js');
+const {gitRepo, gitCommits, gitGetCommits, gitStaged, gitRemoteHead} = require('./helpers/git-utils.js');
 
 test('Add file to index', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
