@@ -1,6 +1,6 @@
 const {defaultTo, castArray} = require('lodash');
-const verifyGit = require('./lib/verify');
-const prepareGit = require('./lib/prepare');
+const verifyGit = require('./lib/verify.js');
+const prepareGit = require('./lib/prepare.js');
 
 let verified;
 

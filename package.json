@@ -95,7 +95,7 @@
     "prettier": true,
     "space": true,
     "rules": {
-      "unicorn/no-reduce": "off",
+      "unicorn/no-array-reduce": "off",
       "unicorn/string-content": "off"
     }
   },

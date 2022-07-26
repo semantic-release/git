@@ -3,7 +3,7 @@ const test = require('ava');
 const {outputFile} = require('fs-extra');
 const {stub} = require('sinon');
 const clearModule = require('clear-module');
-const {push, add} = require('../lib/git');
+const {push, add} = require('../lib/git.js');
 const {
   gitRepo,
   gitCommits,
@@ -12,7 +12,7 @@ const {
   gitCommitedFiles,
   gitGetCommits,
   gitTagVersion,
-} = require('./helpers/git-utils');
+} = require('./helpers/git-utils.js');
 
 test.beforeEach((t) => {
   // Clear npm cache to refresh the module state
