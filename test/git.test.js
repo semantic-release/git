@@ -47,6 +47,25 @@ test('Returns [] if there is no modified files', async (t) => {
   await t.deepEqual(await getModifiedFiles({cwd}), []);
 });
 
+test('Get the modified files, including files in parent directories', async (t) => {
+  // Create a git repository, set the current working directory at the root of the repo
+  const {cwd} = await gitRepo();
+  // Create files
+  await outputFile(path.resolve(cwd, 'file1.js'), '');
+  await outputFile(path.resolve(cwd, 'dir/file2.js'), '');
+  // Add files and commit
+  await add(['.'], {cwd});
+  await commit('Test commit', {cwd});
+  // Update file1.js, dir/file2.js
+  await appendFile(path.resolve(cwd, 'file1.js'), 'Test content');
+  await appendFile(path.resolve(cwd, 'dir/file2.js'), 'Test content');
+
+  await t.deepEqual(
+    (await getModifiedFiles({cwd: path.resolve(cwd, 'dir')})).sort(),
+    ['../file1.js', 'file2.js'].sort()
+  );
+});
+
 test('Commit added files', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const {cwd} = await gitRepo();
