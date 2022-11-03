@@ -2,16 +2,16 @@ const path = require('path');
 const test = require('ava');
 const {outputFile, remove} = require('fs-extra');
 const {stub} = require('sinon');
-const prepare = require('../lib/prepare');
-const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} = require('./helpers/git-utils');
+const prepare = require('../lib/prepare.js');
+const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush} = require('./helpers/git-utils.js');
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   // Stub the logger functions
   t.context.log = stub();
   t.context.logger = {log: t.context.log};
 });
 
-test('Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if they exists and have been changed', async t => {
+test('Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if they exists and have been changed', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {};
   const branch = {name: 'master'};
@@ -45,7 +45,7 @@ test('Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.j
   t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
 });
 
-test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it', async t => {
+test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: []};
   const branch = {name: 'master'};
@@ -64,7 +64,7 @@ test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
 });
 
-test('Allow to customize the commit message', async t => {
+test('Allow to customize the commit message', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}
@@ -89,7 +89,7 @@ Last release: \${lastRelease.version}
   t.is(commit.body, `Last release: ${lastRelease.version}\n${nextRelease.notes}\n`);
 });
 
-test('Commit files matching the patterns in "assets"', async t => {
+test('Commit files matching the patterns in "assets"', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     assets: ['file1.js', '*1.js', ['dir/*.js', '!dir/*.css'], 'file5.js', 'dir2', ['**/*.js', '!**/*.js']],
@@ -123,7 +123,7 @@ test('Commit files matching the patterns in "assets"', async t => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
 });
 
-test('Commit files matching the patterns in "assets" as Objects', async t => {
+test('Commit files matching the patterns in "assets" as Objects', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     assets: ['file1.js', {path: ['dir/*.js', '!dir/*.css']}, {path: 'file5.js'}, 'dir2'],
@@ -157,7 +157,7 @@ test('Commit files matching the patterns in "assets" as Objects', async t => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
 });
 
-test('Commit files matching the patterns in "assets" as single glob', async t => {
+test('Commit files matching the patterns in "assets" as single glob', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: 'dist/**/*.js'};
   const branch = {name: 'master'};
@@ -174,7 +174,7 @@ test('Commit files matching the patterns in "assets" as single glob', async t =>
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test('Commit files matching the patterns in "assets", including dot files', async t => {
+test('Commit files matching the patterns in "assets", including dot files', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: 'dist'};
   const branch = {name: 'master'};
@@ -190,7 +190,7 @@ test('Commit files matching the patterns in "assets", including dot files', asyn
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test('Include deleted files in release commit', async t => {
+test('Include deleted files in release commit', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
     assets: ['file1.js'],
@@ -214,7 +214,7 @@ test('Include deleted files in release commit', async t => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test('Set the commit author and committer name/email based on environment variables', async t => {
+test('Set the commit author and committer name/email based on environment variables', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const branch = {name: 'master'};
   const options = {repositoryUrl};
@@ -240,7 +240,7 @@ test('Set the commit author and committer name/email based on environment variab
   t.is(commit.committer.email, 'committer email');
 });
 
-test('Skip negated pattern if its alone in its group', async t => {
+test('Skip negated pattern if its alone in its group', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {assets: ['!**/*', 'file.js']};
   const branch = {name: 'master'};
@@ -256,7 +256,7 @@ test('Skip negated pattern if its alone in its group', async t => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
-test('Skip commit if there is no files to commit', async t => {
+test('Skip commit if there is no files to commit', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {};
   const branch = {name: 'master'};

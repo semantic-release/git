@@ -17,7 +17,7 @@ const getStream = require('get-stream');
 async function gitRepo(withRemote, branch = 'master') {
   let cwd = tempy.directory();
 
-  await execa('git', ['init'].concat(withRemote ? ['--bare'] : []), {cwd});
+  await execa('git', ['init', ...(withRemote ? ['--bare'] : [])], {cwd});
 
   const repositoryUrl = fileUrl(cwd);
   if (withRemote) {
@@ -63,7 +63,9 @@ async function gitCommits(messages, execaOptions) {
   await pReduce(
     messages,
     async (_, message) =>
-      (await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOptions)).stdout
+      (
+        await execa('git', ['commit', '-m', message, '--allow-empty', '--no-gpg-sign'], execaOptions)
+      ).stdout
   );
   return (await gitGetCommits(undefined, execaOptions)).slice(0, messages.length);
 }
@@ -85,7 +87,7 @@ async function gitGetCommits(from, execaOptions) {
         {...execaOptions, env: {...process.env, ...execaOptions.env}}
       )
     )
-  ).map(commit => {
+  ).map((commit) => {
     commit.message = commit.message.trim();
     commit.gitTags = commit.gitTags.trim();
     return commit;
@@ -160,8 +162,8 @@ async function gitDetachedHead(repositoryUrl, head) {
 async function gitRemoteHead(repositoryUrl, execaOptions) {
   return (await execa('git', ['ls-remote', repositoryUrl, 'HEAD'], execaOptions)).stdout
     .split('\n')
-    .filter(head => Boolean(head))
-    .map(head => head.match(/^(?<head>\S+)/)[1])[0];
+    .filter((head) => Boolean(head))
+    .map((head) => head.match(/^(?<head>\S+)/)[1])[0];
 }
 
 /**
@@ -174,8 +176,8 @@ async function gitRemoteHead(repositoryUrl, execaOptions) {
 async function gitStaged(execaOptions) {
   return (await execa('git', ['status', '--porcelain'], execaOptions)).stdout
     .split('\n')
-    .filter(status => status.startsWith('A '))
-    .map(status => status.match(/^A\s+(?<file>.+)$/)[1]);
+    .filter((status) => status.startsWith('A '))
+    .map((status) => status.match(/^A\s+(?<file>.+)$/)[1]);
 }
 
 /**
@@ -189,7 +191,7 @@ async function gitStaged(execaOptions) {
 async function gitCommitedFiles(ref, execaOptions) {
   return (await execa('git', ['diff-tree', '-r', '--name-only', '--no-commit-id', '-r', ref], execaOptions)).stdout
     .split('\n')
-    .filter(file => Boolean(file));
+    .filter((file) => Boolean(file));
 }
 
 /**
