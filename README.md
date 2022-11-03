@@ -165,7 +165,7 @@ sec   rsa4096/XXXXXXXXXXXXXXXX 2017-12-01 [SC]
 uid                 <your_name> <your_email>
 ssb   rsa4096/YYYYYYYYYYYYYYYY 2017-12-01 [E]
 ```
-the GPG key ID if 16 character string, on the on the `sec` line, after `rsa4096`. In this example, the GPG key ID is `XXXXXXXXXXXXXXXX`.
+the GPG key ID is the 16 character string, on the on the `sec` line, after `rsa4096`. In this example, the GPG key ID is `XXXXXXXXXXXXXXXX`.
 
 Export the public key (replace XXXXXXXXXXXXXXXX with your key ID):
 
@@ -245,7 +245,7 @@ before_install:
   - chmod 600 /tmp/git_gpg_keys.asc
   # Import the gpg key
   - gpg --batch --yes --import /tmp/git_gpg_keys.asc
-  # Create a script that pass the passphrase to the gpg CLI called by git
+  # Create a script to pass the passphrase to the gpg CLI called by git
   - echo '/usr/bin/gpg2 --passphrase ${GPG_PASSPHRASE} --batch --no-tty "$@"' > /tmp/gpg-with-passphrase && chmod +x /tmp/gpg-with-passphrase
   # Configure git to use the script that passes the passphrase
   - git config gpg.program "/tmp/gpg-with-passphrase"
