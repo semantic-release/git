@@ -165,7 +165,7 @@ sec   rsa4096/XXXXXXXXXXXXXXXX 2017-12-01 [SC]
 uid                 <your_name> <your_email>
 ssb   rsa4096/YYYYYYYYYYYYYYYY 2017-12-01 [E]
 ```
-the GPG key ID is the 16 character string, on the on the `sec` line, after `rsa4096`. In this example, the GPG key ID is `XXXXXXXXXXXXXXXX`.
+the GPG key ID is the 16 character string, on the `sec` line, after `rsa4096`. In this example, the GPG key ID is `XXXXXXXXXXXXXXXX`.
 
 Export the public key (replace XXXXXXXXXXXXXXXX with your key ID):
 
