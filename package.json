@@ -34,7 +34,7 @@
     "git-log-parser": "1.2.0",
     "nyc": "15.1.0",
     "semantic-release": "19.0.5",
-    "sinon": "14.0.1",
+    "sinon": "14.0.2",
     "tempy": "1.0.1",
     "xo": "0.39.1"
   },
