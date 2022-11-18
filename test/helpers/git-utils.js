@@ -224,11 +224,12 @@ async function gitPush(repositoryUrl, branch, execaOptions) {
  * @param {Boolean} [forcepush] Whether to force push.
  */
 async function gitForcePush(repositoryUrl, branch, execaOptions, forcePush = false) {
-  await execa(
-    'git',
-    ['push', '--tags', repositoryUrl, `HEAD:${branch}`, forcePush === true ? '--force' : ''],
-    execaOptions
-  );
+  const gitFlags = ['push', '--tags', repositoryUrl, `HEAD:${branch}`];
+  if (forcePush === true) {
+    gitFlags.push('--force');
+  }
+
+  await execa('git', gitFlags, execaOptions);
 }
 
 module.exports = {
