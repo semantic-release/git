@@ -77,6 +77,7 @@ test('Prepare from a shallow clone with force push', async (t) => {
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
     assets: '**/*.{js,json}',
+    forcePush: true,
   };
   await t.context.m.prepare(pluginConfig, {
     cwd,
@@ -147,6 +148,7 @@ test('Prepare from a detached head repository with force pushing', async (t) => 
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
     assets: '**/*.{js,json}',
+    forcePush: true,
   };
   await t.context.m.prepare(pluginConfig, {
     cwd,
