@@ -215,6 +215,22 @@ async function gitPush(repositoryUrl, branch, execaOptions) {
   await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOptions);
 }
 
+/**
+ * Force push to the remote repository.
+ *
+ * @param {String} repositoryUrl The remote repository URL.
+ * @param {String} branch The branch to push.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ * @param {Boolean} [forcepush] Whether to force push.
+ */
+async function gitForcePush(repositoryUrl, branch, execaOptions, forcePush = false) {
+  await execa(
+    'git',
+    ['push', '--tags', repositoryUrl, `HEAD:${branch}`, forcePush === true ? '--force' : ''],
+    execaOptions
+  );
+}
+
 module.exports = {
   gitRepo,
   initBareRepo,
@@ -229,4 +245,5 @@ module.exports = {
   gitCommitedFiles,
   gitAdd,
   gitPush,
+  gitForcePush,
 };

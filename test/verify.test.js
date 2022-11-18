@@ -83,6 +83,26 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', (t
   t.is(error.code, 'EINVALIDMESSAGE');
 });
 
-test('Verify undefined "message" and "assets"', (t) => {
+test('Throw SemanticReleaseError if "forcePush" option is not a Boolean', (t) => {
+  const forcePush = 'failure';
+  const [error] = t.throws(() => verify({forcePush}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFORCEPUSH');
+});
+
+test('Verify "forcePush" is explicitly disabled (falsy)', (t) => {
+  const forcePush = false;
+
+  t.notThrows(() => verify({forcePush}));
+});
+
+test('Verify "forcePush" is an explicitly enabled', (t) => {
+  const forcePush = true;
+
+  t.notThrows(() => verify({forcePush}));
+});
+
+test('Verify undefined "message" and "assets" and "forcePush"', (t) => {
   t.notThrows(() => verify({}));
 });

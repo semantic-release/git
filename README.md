@@ -28,7 +28,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
     "@semantic-release/release-notes-generator",
     ["@semantic-release/git", {
       "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
-      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      "forcePush": true
     }]
   ]
 }
@@ -69,6 +70,7 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 |-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
 | `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
 | `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `forcePush`  | Optional flag of `true` or `false` that defines whether the push has `--force`. | `false` |
 
 #### `message`
 

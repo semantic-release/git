@@ -214,6 +214,30 @@ test('Include deleted files in release commit', async (t) => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
 });
 
+test('Include deleted files in release commit with force push', async (t) => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {
+    assets: ['file1.js'],
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'file1.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file2.js'), 'Test content');
+
+  await gitAdd(['file1.js', 'file2.js'], {cwd, env});
+  await gitCommits(['Add file1.js and file2.js'], {cwd, env});
+  await gitPush(repositoryUrl, 'master', {cwd, env}, true);
+
+  await remove(path.resolve(cwd, 'file1.js'));
+  await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
+
+  t.deepEqual((await gitCommitedFiles('HEAD', {cwd, env})).sort(), ['file1.js'].sort());
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
+});
+
 test('Set the commit author and committer name/email based on environment variables', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const branch = {name: 'master'};
