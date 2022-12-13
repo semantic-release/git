@@ -133,15 +133,6 @@ test('Commit no files when "assets" is false', async (t) => {
   const env = {};
   const lastRelease = {};
   const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
-  // Create .gitignore to ignore file5.js
-  await outputFile(path.resolve(cwd, '.gitignore'), 'file5.js');
-  await outputFile(path.resolve(cwd, 'file1.js'), 'Test content');
-  await outputFile(path.resolve(cwd, 'dir/file2.js'), 'Test content');
-  await outputFile(path.resolve(cwd, 'dir/file3.css'), 'Test content');
-  await outputFile(path.resolve(cwd, 'file4.js'), 'Test content');
-  await outputFile(path.resolve(cwd, 'file5.js'), 'Test content');
-  await outputFile(path.resolve(cwd, 'dir2/file6.js'), 'Test content');
-  await outputFile(path.resolve(cwd, 'dir2/file7.css'), 'Test content');
 
   await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
 
