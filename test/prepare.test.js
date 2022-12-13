@@ -123,6 +123,36 @@ test('Commit files matching the patterns in "assets"', async (t) => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
 });
 
+test('Commit no files when "assets" is false', async (t) => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {
+    assets: false,
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  // Create .gitignore to ignore file5.js
+  await outputFile(path.resolve(cwd, '.gitignore'), 'file5.js');
+  await outputFile(path.resolve(cwd, 'file1.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir/file2.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir/file3.css'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file4.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'file5.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir2/file6.js'), 'Test content');
+  await outputFile(path.resolve(cwd, 'dir2/file7.css'), 'Test content');
+
+  await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
+
+  // Verify file2 and file1 have been commited
+  // file4.js is excluded as no glob matching
+  // file3.css is ignored due to the negative glob '!dir/*.css'
+  // file5.js is not ignored even if it's in the .gitignore
+  // file6.js and file7.css are included because dir2 is expanded
+  t.deepEqual((await gitCommitedFiles('HEAD', {cwd, env})).sort(), []);
+});
+
 test('Commit files matching the patterns in "assets" as Objects', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
