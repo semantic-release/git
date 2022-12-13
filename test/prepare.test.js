@@ -136,11 +136,6 @@ test('Commit no files when "assets" is false', async (t) => {
 
   await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
 
-  // Verify file2 and file1 have been commited
-  // file4.js is excluded as no glob matching
-  // file3.css is ignored due to the negative glob '!dir/*.css'
-  // file5.js is not ignored even if it's in the .gitignore
-  // file6.js and file7.css are included because dir2 is expanded
   t.deepEqual((await gitCommitedFiles('HEAD', {cwd, env})).sort(), []);
 });
 
