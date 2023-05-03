@@ -1,5 +1,5 @@
 {
-  "name": "@semantic-release/git",
+  "name": "@oxtiotaz/git",
   "description": "semantic-release plugin to commit release assets to the project's git repository",
   "version": "0.0.0-development",
   "author": "Pierre Vanduynslager (https://github.com/pvdlg)",
