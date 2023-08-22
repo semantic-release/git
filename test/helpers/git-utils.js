@@ -167,6 +167,21 @@ async function gitRemoteHead(repositoryUrl, execaOptions) {
 }
 
 /**
+ * Get the first commit sha referenced by the tag `tagName` in the local repository.
+ *
+ * @param {String} repositoryUrl The repository remote URL.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ *
+ * @return {String} The HEAD sha of the local repository.
+ */
+async function gitShowHead(execaOptions) {
+  return (await execa('git', ['show', 'HEAD', '--quiet'], execaOptions)).stdout
+    .split('\n')
+    .filter((show) => show.startsWith('commit'))
+    .map((commit) => commit.match(/^commit (?<commit>\S+)/)[1])[0];
+}
+
+/**
  *Get the list of staged files.
  *
  * @param {Object} [execaOpts] Options to pass to `execa`.
@@ -225,6 +240,7 @@ module.exports = {
   gitShallowClone,
   gitDetachedHead,
   gitRemoteHead,
+  gitShowHead,
   gitStaged,
   gitCommitedFiles,
   gitAdd,
