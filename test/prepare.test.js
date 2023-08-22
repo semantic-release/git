@@ -3,7 +3,16 @@ const test = require('ava');
 const {outputFile, remove} = require('fs-extra');
 const {stub} = require('sinon');
 const prepare = require('../lib/prepare.js');
-const {gitRepo, gitGetCommits, gitCommitedFiles, gitAdd, gitCommits, gitPush, gitRemoteHead, gitShowHead} = require('./helpers/git-utils.js');
+const {
+  gitRepo,
+  gitGetCommits,
+  gitCommitedFiles,
+  gitAdd,
+  gitCommits,
+  gitPush,
+  gitRemoteHead,
+  gitShowHead,
+} = require('./helpers/git-utils.js');
 
 test.beforeEach((t) => {
   // Stub the logger functions
@@ -243,7 +252,7 @@ test('Set the commit author and committer name/email based on environment variab
 test('Push commit to remote by default', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
-    enablePush: true
+    enablePush: true,
   };
   const branch = {name: 'master'};
   const options = {repositoryUrl};
@@ -257,16 +266,13 @@ test('Push commit to remote by default', async (t) => {
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['CHANGELOG.md']);
   // Verify the commit as been pushed
-  t.deepEqual(
-    await gitRemoteHead(repositoryUrl, {cwd, env}),
-    await gitShowHead({cwd, env})
-  );
+  t.deepEqual(await gitRemoteHead(repositoryUrl, {cwd, env}), await gitShowHead({cwd, env}));
 });
 
 test('Skip push commit when enable push is false', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
-    enablePush: false
+    enablePush: false,
   };
   const branch = {name: 'master'};
   const options = {repositoryUrl};
@@ -280,10 +286,7 @@ test('Skip push commit when enable push is false', async (t) => {
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['CHANGELOG.md']);
   // Verify the commit as been not been pushed
-  t.notDeepEqual(
-    await gitRemoteHead(repositoryUrl, {cwd, env}),
-    await gitShowHead({cwd, env})
-  );
+  t.notDeepEqual(await gitRemoteHead(repositoryUrl, {cwd, env}), await gitShowHead({cwd, env}));
 });
 
 test('Skip negated pattern if its alone in its group', async (t) => {
