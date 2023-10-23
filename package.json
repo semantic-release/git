@@ -34,7 +34,6 @@
     "get-stream": "6.0.1",
     "git-log-parser": "1.2.0",
     "c8": "7.14.0",
-    "semantic-release": "21.1.2",
     "sinon": "17.0.0",
     "tempy": "1.0.1",
     "prettier": "2.8.8"
