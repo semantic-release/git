@@ -7,7 +7,7 @@
 [![npm beta version](https://img.shields.io/npm/v/@semantic-release/git/beta.svg)](https://www.npmjs.com/package/@semantic-release/git)
 
 | Step               | Description                                                                                                                        |
-|--------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `verifyConditions` | Verify the access to the remote Git repository, the commit [`message`](#message) and the [`assets`](#assets) option configuration. |
 | `prepare`          | Create a release commit, including configurable file assets.                                                                       |
 
@@ -26,15 +26,19 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
-    ["@semantic-release/git", {
-      "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
-      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-    }]
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
   ]
 }
 ```
 
 With this example, for each release a release commit will be pushed to the remote Git repository with:
+
 - a message formatted like `chore(release): <version> [skip ci]\n\n<release notes>`
 - the `.js` and `.css` files in the `dist` directory, the files in the `docs` directory and the `package.json`
 
@@ -57,7 +61,7 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 ### Environment variables
 
 | Variable              | Description                                                                                                                                                              | Default                              |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
 | `GIT_AUTHOR_NAME`     | The author name associated with the release commit. See [Git environment variables](https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables#_committing).     | @semantic-release-bot.               |
 | `GIT_AUTHOR_EMAIL`    | The author email associated with the release commit. See [Git environment variables](https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables#_committing).    | @semantic-release-bot email address. |
 | `GIT_COMMITTER_NAME`  | The committer name associated with the release commit. See [Git environment variables](https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables#_committing).  | @semantic-release-bot.               |
@@ -66,7 +70,7 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 ### Options
 
 | Options   | Description                                                                                                                  | Default                                                                        |
-|-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| --------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
 | `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
 
@@ -74,16 +78,16 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 The message for the release commit is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
 
-| Parameter           | Description                                                                                                                             |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `branch`            | The branch from which the release is done.                                                                                              |
-| `branch.name`       | The branch name.                                                                                                                        |
+| Parameter           | Description                                                                                                                               |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `branch`            | The branch from which the release is done.                                                                                                |
+| `branch.name`       | The branch name.                                                                                                                          |
 | `branch.type`       | The [type of branch](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/workflow-configuration.md#branch-types). |
-| `branch.channel`    | The distribution channel on which to publish releases from this branch.                                                                 |
-| `branch.range`      | The range of [semantic versions](https://semver.org) to support on this branch.                                                         |
-| `branch.prerelease` | The pre-release detonation to append to [semantic versions](https://semver.org) released from this branch.                              |
-| `lastRelease`       | `Object` with `version`, `gitTag` and `gitHead` of the last release.                                                                    |
-| `nextRelease`       | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done.                                                     |
+| `branch.channel`    | The distribution channel on which to publish releases from this branch.                                                                   |
+| `branch.range`      | The range of [semantic versions](https://semver.org) to support on this branch.                                                           |
+| `branch.prerelease` | The pre-release detonation to append to [semantic versions](https://semver.org) released from this branch.                                |
+| `lastRelease`       | `Object` with `version`, `gitTag` and `gitHead` of the last release.                                                                      |
+| `nextRelease`       | `Object` with `version`, `gitTag`, `gitHead` and `notes` of the release being done.                                                       |
 
 **Note**: It is recommended to include `[skip ci]` in the commit message to not trigger a new build. Some CI service support the `[skip ci]` keyword only in the subject of the message.
 
@@ -91,11 +95,12 @@ The message for the release commit is generated with [Lodash template](https://l
 
 The `message` `Release <%= nextRelease.version %> - <%= new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' }) %> [skip ci]\n\n<%= nextRelease.notes %>` will generate the commit message:
 
-> Release v1.0.0 - Oct. 21, 2015 1:24 AM \[skip ci\]<br><br>## 1.0.0<br><br>### Features<br>* Generate 1.21 gigawatts of electricity<br>...
+> Release v1.0.0 - Oct. 21, 2015 1:24 AM \[skip ci\]<br><br>## 1.0.0<br><br>### Features<br>\* Generate 1.21 gigawatts of electricity<br>...
 
 #### `assets`
 
 Can be an `Array` or a single entry. Each entry can be either:
+
 - a [glob](https://github.com/micromatch/micromatch#matching-features)
 - or an `Object` with a `path` property containing a [glob](https://github.com/micromatch/micromatch#matching-features).
 
@@ -120,6 +125,7 @@ If a directory is configured, all the files under this directory and its childre
 ### Examples
 
 When used with the [@semantic-release/changelog](https://github.com/semantic-release/changelog) or [@semantic-release/npm](https://github.com/semantic-release/npm) plugins:
+
 - The [@semantic-release/changelog](https://github.com/semantic-release/changelog) plugin must be called first in order to update the changelog file so the `@semantic-release/git` and [@semantic-release/npm](https://github.com/semantic-release/npm) plugins can include it in the release.
 - The [@semantic-release/npm](https://github.com/semantic-release/npm) plugin must be called second in order to update the `package.json` file so the `@semantic-release/git` plugin can include it in the release commit.
 
@@ -131,7 +137,7 @@ When used with the [@semantic-release/changelog](https://github.com/semantic-rel
     "@semantic-release/changelog",
     "@semantic-release/npm",
     "@semantic-release/git"
-  ],
+  ]
 }
 ```
 
@@ -165,6 +171,7 @@ sec   rsa4096/XXXXXXXXXXXXXXXX 2017-12-01 [SC]
 uid                 <your_name> <your_email>
 ssb   rsa4096/YYYYYYYYYYYYYYYY 2017-12-01 [E]
 ```
+
 the GPG key ID is the 16 character string, on the `sec` line, after `rsa4096`. In this example, the GPG key ID is `XXXXXXXXXXXXXXXX`.
 
 Export the public key (replace XXXXXXXXXXXXXXXX with your key ID):
@@ -209,6 +216,7 @@ $ travis login
 ```
 
 Add the following [environment](https://github.com/travis-ci/travis.rb#env) variables to Travis:
+
 - `GPG_PASSPHRASE` to Travis with the value set during the [GPG keys generation](#generate-the-gpg-keys) step
 - `GPG_KEY_ID` to Travis with the value of your GPG key ID retrieved during the [GPG keys generation](#generate-the-gpg-keys) (replace XXXXXXXXXXXXXXXX with your key ID)
 - `GIT_EMAIL` with the email address you set during the [GPG keys generation](#generate-the-gpg-keys) step
@@ -233,6 +241,7 @@ $ gpg --export-secret-key -a XXXXXXXXXXXXXXXX >> git_gpg_keys.asc
 ```bash
 $ travis encrypt-file git_gpg_keys.asc
 ```
+
 The `travis encrypt-file` will encrypt the keys into the `git_gpg_keys.asc.enc` file and output in the console the command to add to your `.travis.yml` file. It should look like `openssl aes-256-cbc -K $encrypted_AAAAAAAAAAAA_key -iv $encrypted_BBBBBBBBBBBB_iv -in git_gpg_keys.asc.enc -out git_gpg_keys.asc -d`.
 
 Copy this command to your `.travis.yml` file in the `before_install` step. Change the output path to write the unencrypted key in `/tmp`: `-out git_gpg_keys.asc` => `/tmp/git_gpg_keys.asc`. This will avoid to commit / modify / delete the unencrypted keys by mistake on the CI. Then add the commands to decrypt the GPG keys and make it available to `git`:
