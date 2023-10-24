@@ -1,9 +1,9 @@
-const tempy = require('tempy');
-const execa = require('execa');
-const fileUrl = require('file-url');
-const pReduce = require('p-reduce');
-const gitLogParser = require('git-log-parser');
-const getStream = require('get-stream');
+import tempy from 'tempy';
+import execa from 'execa';
+import fileUrl from 'file-url';
+import pReduce from 'p-reduce';
+import gitLogParser from 'git-log-parser';
+import getStream from 'get-stream';
 
 /**
  * Create a temporary git repository.
@@ -215,7 +215,7 @@ async function gitPush(repositoryUrl, branch, execaOptions) {
   await execa('git', ['push', '--tags', repositoryUrl, `HEAD:${branch}`], execaOptions);
 }
 
-module.exports = {
+export default {
   gitRepo,
   initBareRepo,
   gitCommits,

@@ -13,8 +13,9 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - '14.17'
-          - 16
+          - 18.0.0
+          - 19
+          - 20
         os:
           - ubuntu-latest
           - macos-latest
@@ -29,7 +30,8 @@ jobs:
         with:
           node-version: "${{ matrix.node-version }}"
           cache: npm
-      - run: npm ci
+      - run: npm clean-install
+      - run: npm audit signatures
       - name: Ensure dependencies are compatible with the version of node
         run: npx ls-engines
       - run: "npm run test:ci"
@@ -43,5 +45,8 @@ jobs:
         with:
           node-version: "${{ matrix.node-version }}"
           cache: npm
-      - run: npm ci
+      - run: npm clean-install
       - run: npm run lint
+      # https://github.com/lirantal/lockfile-lint#readme
+      - name: Scan lockfile for security issues
+        run: npx lockfile-lint --path package-lock.json
