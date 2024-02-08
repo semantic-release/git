@@ -270,3 +270,43 @@ test('Skip commit if there is no files to commit', async (t) => {
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), []);
 });
+
+test('Allow to disable the label "[skip ci]" in commit message', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {
+    skipCi: false,
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {version: 'v2.0.0'};
+  const nextRelease = {version: '3.0.0', gitTag: 'v3.0.0', notes: 'Test release note'};
+  await outputFile(path.resolve(cwd, 'CHANGELOG.md'), 'Initial CHANGELOG');
+  await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package'}");
+
+  await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
+
+  // Verify the files that have been commited
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['CHANGELOG.md', 'package.json']);
+  // Verify the commit message contains on the new release notes
+  const [commit] = await gitGetCommits(undefined, {cwd, env});
+  t.is(commit.subject, `chore(release): ${nextRelease.version}`);
+  t.is(commit.body, `${nextRelease.notes}\n`);
+});
+
+test('Push commit with "ci.skip" push-option without error', async t => {
+  const {cwd, repositoryUrl} = await gitRepo(false);
+  const pluginConfig = {
+    skipCi: 'pushOption',
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {version: 'v9.9.9'};
+  const nextRelease = {version: '10.0.0', gitTag: '10.0.0', notes: 'Release note test'};
+  await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-great-lib'}");
+
+  t.notThrows(async () =>
+    prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger})
+  );
+});
