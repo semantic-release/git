@@ -123,6 +123,22 @@ test('Commit files matching the patterns in "assets"', async (t) => {
   t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 5]);
 });
 
+test('Commit no files when "assets" is false', async (t) => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {
+    assets: false,
+  };
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+
+  await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
+
+  t.deepEqual((await gitCommitedFiles('HEAD', {cwd, env})).sort(), []);
+});
+
 test('Commit files matching the patterns in "assets" as Objects', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const pluginConfig = {
