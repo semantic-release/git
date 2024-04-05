@@ -183,7 +183,7 @@ In GitHub **Settings**, click on **SSH and GPG keys** in the sidebar, then on th
 
 Paste the entire GPG key export previously and click the **Add GPG Key** button.
 
-See [Adding a new GPG key to your GitHub account](https://help.github.com/articles/adding-a-new-gpg-key-to-your-github-account/) for more details.
+See [Adding a new GPG key to your GitHub account](https://docs.github.com/en/authentication/managing-commit-signature-verification/adding-a-gpg-key-to-your-github-account) for more details.
 
 ### Use the GPG key to sign commit and tags locally
 
