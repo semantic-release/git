@@ -32,7 +32,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
     "@semantic-release/release-notes-generator",
     ["@semantic-release/git", {
       "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
-      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      "skipCi": "message"
     }]
   ]
 }
@@ -44,7 +45,7 @@ With this example, for each release a release commit will be pushed to the remot
 
 ### Merging between semantic-release branches
 
-This plugin will, by default, create commit messages with the keyword `[skip ci]`, so they won't trigger a new unnecessary CI build. If you are using **semantic-release** with [multiple branches](https://github.com/semantic-release/semantic-release/blob/beta/docs/usage/workflow-configuration.md), when merging a branch with a head being a release commit, a CI job will be triggered on the target branch. Depending on the CI service that might create an unexpected behavior as the head of the target branch might be ignored by the build due to the `[skip ci]` keyword.
+This plugin will, by default, create commit messages with the keyword `[skip ci]`, so they won't trigger a new unnecessary CI build. You can however overwrite this behavior with [`skipCi`](#skipCi) option. 
 
 To avoid any unexpected behavior we recommend to use the [`--no-ff` option](https://git-scm.com/docs/git-merge#Documentation/git-merge.txt---no-ff) when merging branches used by **semantic-release**.
 
@@ -69,10 +70,11 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 ### Options
 
-| Options   | Description                                                                                                                  | Default                                                                        |
-|-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
-| `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| Options   | Description                                                                                                                         | Default                                                                        |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `message` | The message for the release commit. See [message](#message).                                                                        | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
+| `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets).        | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `skipCi`  | Customize the way the "skip ci" information is passed to git. Can be `false`, `"message"` or `"pushOption"`. See [skipCi](#skipCi). | `"message"`                                                                    |
 
 #### `message`
 
@@ -121,6 +123,14 @@ If a directory is configured, all the files under this directory and its childre
 
 `[['dist/**/*.{js,css}', '!**/*.min.*']]`: include all `js` and `css` files in the `dist` directory and its sub-directories excluding the minified version.
 
+#### `skipCi`
+
+If you are using **semantic-release** with [multiple branches](https://github.com/semantic-release/semantic-release/blob/beta/docs/usage/workflow-configuration.md), when merging a branch with a head being a release commit, a CI job will be triggered on the target branch. Depending on the CI service that might create an unexpected behavior as the head of the target branch might be ignored by the build due to this plugin pass "skip ci" information to git, this can be done :
+- [default behavior] with the `[skip ci]` keyword in commit message. The advantage of this approach is that it's compliant with multiple CI systems, and it presents no risk. However, re-merge the targeted branch to another will skip the CI job too, which is sometimes not the desired behavior.
+- with the `ci.skip` [push-option](https://git-scm.com/docs/git-push/fr#git-push---push-optionltoptiongt), that skip ci silently just for the specified git push operation, not according to the commit. Be sure that this option is correctly recognized by your CI system (it's the case for [gitlab](https://docs.gitlab.com/ee/user/project/push_options.html#push-options-for-gitlab-cicd) for example). **Beware that this option depends on your git version which can be >= 2.10**
+
+The value can also be passed to `false` to explicitly remove the `[skip ci]` keyword of the default commit message (without overwrite it) and skipping "push-option" behavior.
+
 ### Examples
 
 When used with the [@semantic-release/changelog](https://github.com/semantic-release/changelog) or [@semantic-release/npm](https://github.com/semantic-release/npm) plugins:
@@ -135,7 +145,7 @@ When used with the [@semantic-release/changelog](https://github.com/semantic-rel
     "@semantic-release/changelog",
     "@semantic-release/npm",
     "@semantic-release/git"
-  ],
+  ]
 }
 ```
 

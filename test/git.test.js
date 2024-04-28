@@ -82,7 +82,17 @@ test('Push commit to remote repository', async (t) => {
   const {cwd, repositoryUrl} = await gitRepo(true);
   const [{hash}] = await gitCommits(['Test commit'], {cwd});
 
-  await push(repositoryUrl, 'master', {cwd});
+  await push(repositoryUrl, 'master', undefined, {cwd});
+
+  t.is(await gitRemoteHead(repositoryUrl, {cwd}), hash);
+});
+
+test('Push commit with push-option to remote repository', async t => {
+  // Create a git repository without remote, set the current working directory at the root of the repo
+  const {cwd, repositoryUrl} = await gitRepo(false);
+  const [{hash}] = await gitCommits(['Test commit with push-option'], {cwd});
+
+  await push(repositoryUrl, 'master', ['ci.skip'], {cwd});
 
   t.is(await gitRemoteHead(repositoryUrl, {cwd}), hash);
 });
