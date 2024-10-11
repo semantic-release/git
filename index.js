@@ -1,4 +1,4 @@
-import { defaultTo, castArray } from 'lodash';
+import { defaultTo, castArray } from 'lodash-es';
 import verifyGit from './lib/verify.js';
 import prepareGit from './lib/prepare.js';
 
