@@ -3,6 +3,7 @@
   "description": "semantic-release plugin to commit release assets to the project's git repository",
   "version": "0.0.0-development",
   "author": "Pierre Vanduynslager (https://github.com/pvdlg)",
+  "type": "module",
   "ava": {
     "files": [
       "test/**/*.test.js"
@@ -57,7 +58,7 @@
     "version"
   ],
   "license": "MIT",
-  "main": "index.js",
+  "exports": "./index.js",
   "nyc": {
     "include": [
       "lib/**/*.js",

@@ -1,10 +1,10 @@
-const {defaultTo, castArray} = require('lodash');
-const verifyGit = require('./lib/verify.js');
-const prepareGit = require('./lib/prepare.js');
+import { defaultTo, castArray } from 'lodash';
+import verifyGit from './lib/verify.js';
+import prepareGit from './lib/prepare.js';
 
 let verified;
 
-function verifyConditions(pluginConfig, context) {
+export function verifyConditions(pluginConfig, context) {
   const {options} = context;
   // If the Git prepare plugin is used and has `assets` or `message` configured, validate them now in order to prevent any release if the configuration is wrong
   if (options.prepare) {
@@ -19,7 +19,7 @@ function verifyConditions(pluginConfig, context) {
   verified = true;
 }
 
-async function prepare(pluginConfig, context) {
+export async function prepare(pluginConfig, context) {
   if (!verified) {
     verifyGit(pluginConfig);
     verified = true;
@@ -27,5 +27,3 @@ async function prepare(pluginConfig, context) {
 
   await prepareGit(pluginConfig, context);
 }
-
-module.exports = {verifyConditions, prepare};
