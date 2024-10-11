@@ -3,6 +3,7 @@
   "description": "semantic-release plugin to commit release assets to the project's git repository",
   "version": "0.0.0-development",
   "author": "Pierre Vanduynslager (https://github.com/pvdlg)",
+  "type": "module",
   "ava": {
     "files": [
       "test/**/*.test.js"
@@ -21,7 +22,7 @@
     "debug": "^4.0.0",
     "dir-glob": "^3.0.0",
     "execa": "^5.0.0",
-    "lodash": "^4.17.4",
+    "lodash-es": "^4.17.21",
     "micromatch": "^4.0.0",
     "p-reduce": "^2.0.0"
   },
@@ -33,10 +34,10 @@
     "get-stream": "6.0.1",
     "git-log-parser": "1.2.0",
     "nyc": "15.1.0",
+    "prettier": "^3.3.3",
     "semantic-release": "21.1.2",
     "sinon": "17.0.1",
-    "tempy": "1.0.1",
-    "xo": "0.39.1"
+    "tempy": "1.0.1"
   },
   "engines": {
     "node": ">=14.17"
@@ -45,7 +46,7 @@
     "lib",
     "index.js"
   ],
-  "homepage": "https://github.com/semantic-release/git#readme",
+  "homepage": "https://github.com/semantic-release/git",
   "keywords": [
     "changelog",
     "commit",
@@ -57,7 +58,7 @@
     "version"
   ],
   "license": "MIT",
-  "main": "index.js",
+  "exports": "./index.js",
   "nyc": {
     "include": [
       "lib/**/*.js",
@@ -73,10 +74,6 @@
   "peerDependencies": {
     "semantic-release": ">=18.0.0"
   },
-  "prettier": {
-    "printWidth": 120,
-    "trailingComma": "es5"
-  },
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -86,19 +83,11 @@
     "url": "https://github.com/semantic-release/git.git"
   },
   "scripts": {
-    "lint": "xo",
-    "pretest": "npm run lint",
+    "lint": "prettier --check \"{lib,test}/**/*.{js,json,ts}\" \"*.{js,md,json}\" \".github/**/*.yml\"",
+    "lint:fix": "prettier --write \"{lib,test}/**/*.{js,json,ts}\" \"*.{js,md,json}\" \".github/**/*.yml\"",
     "semantic-release": "semantic-release",
     "test": "nyc ava -v",
     "test:ci": "nyc ava -v"
-  },
-  "xo": {
-    "prettier": true,
-    "space": true,
-    "rules": {
-      "unicorn/no-array-reduce": "off",
-      "unicorn/string-content": "off"
-    }
   },
   "renovate": {
     "extends": [
