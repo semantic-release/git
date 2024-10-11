@@ -46,7 +46,7 @@
     "lib",
     "index.js"
   ],
-  "homepage": "https://github.com/semantic-release/git#readme",
+  "homepage": "https://github.com/semantic-release/git",
   "keywords": [
     "changelog",
     "commit",
