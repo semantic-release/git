@@ -13,6 +13,7 @@ function verifyConditions(pluginConfig, context) {
 
     pluginConfig.assets = defaultTo(pluginConfig.assets, preparePlugin.assets);
     pluginConfig.message = defaultTo(pluginConfig.message, preparePlugin.message);
+    pluginConfig.push_remote = defaultTo(pluginConfig.push, preparePlugin.push_remote);
   }
 
   verifyGit(pluginConfig);

@@ -42,6 +42,7 @@ test('Prepare from a shallow clone', async (t) => {
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
     assets: '**/*.{js,json}',
+    push_remote: true,
   };
   await t.context.m.prepare(pluginConfig, {
     cwd,
@@ -77,6 +78,7 @@ test('Prepare from a detached head repository', async (t) => {
   const pluginConfig = {
     message: `Release version \${nextRelease.version} from branch \${branch}\n\n\${nextRelease.notes}`,
     assets: '**/*.{js,json}',
+    push_remote: true,
   };
   await t.context.m.prepare(pluginConfig, {
     cwd,

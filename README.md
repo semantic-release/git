@@ -32,7 +32,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
     "@semantic-release/release-notes-generator",
     ["@semantic-release/git", {
       "assets": ["dist/**/*.{js,css}", "docs", "package.json"],
-      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      "push_remote": true
     }]
   ]
 }
@@ -69,10 +70,11 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 ### Options
 
-| Options   | Description                                                                                                                  | Default                                                                        |
-|-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
-| `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| Options       | Description                                                                                                                  | Default                                                                        |
+|---------------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `message`     | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
+| `assets`      | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `push_remote` | Whether to push the release to the remote repository. Set to `false` to generate the changes locally only.                   | `true`                                                                         |
 
 #### `message`
 
