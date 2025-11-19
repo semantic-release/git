@@ -83,6 +83,39 @@ test('Throw SemanticReleaseError if "message" option is a whitespace String', (t
   t.is(error.code, 'EINVALIDMESSAGE');
 });
 
-test('Verify undefined "message" and "assets"', (t) => {
+test('Verify "respectIgnoreFile" is a Boolean', (t) => {
+  t.notThrows(() => verify({respectIgnoreFile: true}));
+  t.notThrows(() => verify({respectIgnoreFile: false}));
+});
+
+test('Throw SemanticReleaseError if "respectIgnoreFile" option is a string', (t) => {
+  const [error] = t.throws(() => verify({respectIgnoreFile: 'foo'}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDRESPECTIGNOREFILE');
+});
+
+test('Throw SemanticReleaseError if "respectIgnoreFile" option is a number', (t) => {
+  const [error] = t.throws(() => verify({respectIgnoreFile: 10}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDRESPECTIGNOREFILE');
+});
+
+test('Throw SemanticReleaseError if "respectIgnoreFile" option is an array', (t) => {
+  const [error] = t.throws(() => verify({respectIgnoreFile: []}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDRESPECTIGNOREFILE');
+});
+
+test('Throw SemanticReleaseError if "respectIgnoreFile" option is an object', (t) => {
+  const [error] = t.throws(() => verify({respectIgnoreFile: {}}));
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDRESPECTIGNOREFILE');
+});
+
+test('Verify undefined "message", "assets", and "respectIgnoreFile"', (t) => {
   t.notThrows(() => verify({}));
 });

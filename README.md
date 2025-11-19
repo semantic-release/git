@@ -3,7 +3,7 @@
 [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to commit release assets to the project's [git](https://git-scm.com/) repository.
 
 > [!WARNING]
-> You likely _do not_ need this plugin to accomplish your goals with semantic-release.  
+> You likely _do not_ need this plugin to accomplish your goals with semantic-release.
 > Please consider our [recommendation against making commits during your release](https://semantic-release.gitbook.io/semantic-release/support/faq#making-commits-during-the-release-process-adds-significant-complexity) to avoid unnecessary headaches.
 
 [![Build Status](https://github.com/semantic-release/git/workflows/Test/badge.svg)](https://github.com/semantic-release/git/actions?query=workflow%3ATest+branch%3Amaster) [![npm latest version](https://img.shields.io/npm/v/@semantic-release/git/latest.svg)](https://www.npmjs.com/package/@semantic-release/git)
@@ -69,10 +69,11 @@ When configuring branches permission on a Git hosting service (e.g. [GitHub prot
 
 ### Options
 
-| Options   | Description                                                                                                                  | Default                                                                        |
-|-----------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `message` | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
-| `assets`  | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| Options             | Description                                                                                                                  | Default                                                                        |
+|---------------------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `message`           | The message for the release commit. See [message](#message).                                                                 | `chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}`     |
+| `assets`            | Files to include in the release commit. Set to `false` to disable adding files to the release commit. See [assets](#assets). | `['CHANGELOG.md', 'package.json', 'package-lock.json', 'npm-shrinkwrap.json']` |
+| `respectIgnoreFile` | Whether or not added files should be filtered by your project's [gitignore](https://git-scm.com/docs/gitignore).             | `false`
 
 #### `message`
 
@@ -107,7 +108,7 @@ Each entry in the `assets` `Array` is globbed individually. A [glob](https://git
 
 If a directory is configured, all the files under this directory and its children will be included.
 
-**Note**: If a file has a match in `assets` it will be included even if it also has a match in `.gitignore`.
+**Note**: If a file has a match in `assets` it will be included even if it also has a match in `.gitignore`, unless `respectIgnoreFile` is set to `true`.
 
 ##### `assets` examples
 

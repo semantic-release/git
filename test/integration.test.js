@@ -29,7 +29,7 @@ test('Prepare from a shallow clone', async (t) => {
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '1.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Initial content');
   await outputFile(path.resolve(cwd, 'dist/file.css'), 'Initial content');
-  await add('.', {cwd});
+  await add('.', false, {cwd});
   await gitCommits(['First'], {cwd});
   await gitTagVersion('v1.0.0', undefined, {cwd});
   await push(repositoryUrl, branch.name, {cwd});
@@ -64,7 +64,7 @@ test('Prepare from a detached head repository', async (t) => {
   await outputFile(path.resolve(cwd, 'package.json'), "{name: 'test-package', version: '1.0.0'}");
   await outputFile(path.resolve(cwd, 'dist/file.js'), 'Initial content');
   await outputFile(path.resolve(cwd, 'dist/file.css'), 'Initial content');
-  await add('.', {cwd});
+  await add('.', false, {cwd});
   const [{hash}] = await gitCommits(['First'], {cwd});
   await gitTagVersion('v1.0.0', undefined, {cwd});
   await push(repositoryUrl, branch.name, {cwd});
@@ -106,7 +106,10 @@ test('Verify authentication only on the fist call', async (t) => {
 test('Throw SemanticReleaseError if prepare config is invalid', (t) => {
   const message = 42;
   const assets = true;
-  const options = {prepare: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets}]};
+  const respectIgnoreFile = 'foo';
+  const options = {
+    prepare: ['@semantic-release/npm', {path: '@semantic-release/git', message, assets, respectIgnoreFile}],
+  };
 
   const errors = [...t.throws(() => t.context.m.verifyConditions({}, {options, logger: t.context.logger}))];
 
@@ -114,18 +117,25 @@ test('Throw SemanticReleaseError if prepare config is invalid', (t) => {
   t.is(errors[0].code, 'EINVALIDASSETS');
   t.is(errors[1].name, 'SemanticReleaseError');
   t.is(errors[1].code, 'EINVALIDMESSAGE');
+  t.is(errors[2].name, 'SemanticReleaseError');
+  t.is(errors[2].code, 'EINVALIDRESPECTIGNOREFILE');
 });
 
 test('Throw SemanticReleaseError if config is invalid', (t) => {
   const message = 42;
   const assets = true;
+  const respectIgnoreFile = 'foo';
 
   const errors = [
-    ...t.throws(() => t.context.m.verifyConditions({message, assets}, {options: {}, logger: t.context.logger})),
+    ...t.throws(() =>
+      t.context.m.verifyConditions({message, assets, respectIgnoreFile}, {options: {}, logger: t.context.logger})
+    ),
   ];
 
   t.is(errors[0].name, 'SemanticReleaseError');
   t.is(errors[0].code, 'EINVALIDASSETS');
   t.is(errors[1].name, 'SemanticReleaseError');
   t.is(errors[1].code, 'EINVALIDMESSAGE');
+  t.is(errors[2].name, 'SemanticReleaseError');
+  t.is(errors[2].code, 'EINVALIDRESPECTIGNOREFILE');
 });
