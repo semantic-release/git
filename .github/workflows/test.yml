@@ -32,7 +32,9 @@ jobs:
           cache: npm
       - run: npm clean-install
       - name: Ensure dependencies are compatible with the version of node
-        run: npx ls-engines
+        run: |
+          npm cache clean --force
+          npx --yes ls-engines
       - run: "npm run test"
   test:
     runs-on: ubuntu-latest
