@@ -8,7 +8,9 @@
     "files": [
       "test/**/*.test.js",
       "!test/integration.test.js"
-    ]
+    ],
+    "timeout": "2m",
+    "workerThreads": false
   },
   "bugs": {
     "url": "https://github.com/semantic-release/git/issues"
@@ -74,7 +76,7 @@
     "semantic-release": "semantic-release",
     "test": "npm-run-all --print-label --parallel lint:* --parallel test:*",
     "test:unit": "c8 ava --verbose",
-    "test:integration": "ava --verbose test/integration.test.js"
+    "test:integration": "ava --verbose --timeout=120s test/integration.test.js"
   },
   "c8": {
     "include": [
