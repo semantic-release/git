@@ -179,6 +179,8 @@ async function gitShallowClone(repositoryUrl, branch = "master", depth = 1) {
       cwd,
     },
   );
+  await execa("git", ["config", "user.email", "test@test.com"], { cwd });
+  await execa("git", ["config", "user.name", "Test"], { cwd });
   return cwd;
 }
 
@@ -196,6 +198,8 @@ async function gitDetachedHead(repositoryUrl, head) {
   await execa("git", ["remote", "add", "origin", repositoryUrl], { cwd });
   await execa("git", ["fetch", repositoryUrl], { cwd });
   await execa("git", ["checkout", head], { cwd });
+  await execa("git", ["config", "user.email", "test@test.com"], { cwd });
+  await execa("git", ["config", "user.name", "Test"], { cwd });
   return cwd;
 }
 
