@@ -41,6 +41,8 @@ async function gitRepo(withRemote, branch = "master") {
   }
 
   await execa("git", ["config", "commit.gpgsign", false], { cwd });
+  await execa("git", ["config", "user.email", "test@test.com"], { cwd });
+  await execa("git", ["config", "user.name", "Test"], { cwd });
 
   return { cwd, repositoryUrl };
 }
@@ -59,6 +61,8 @@ async function gitRepo(withRemote, branch = "master") {
 async function initBareRepo(repositoryUrl, branch = "master") {
   const cwd = temporaryDirectory();
   await execa("git", ["clone", "--no-hardlinks", repositoryUrl, cwd], { cwd });
+  await execa("git", ["config", "user.email", "test@test.com"], { cwd });
+  await execa("git", ["config", "user.name", "Test"], { cwd });
   await gitCheckout(branch, true, { cwd });
   await gitCommits(["Initial commit"], { cwd });
   await execa("git", ["push", repositoryUrl, branch], { cwd });
