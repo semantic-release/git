@@ -7,7 +7,6 @@
 > Please consider our [recommendation against making commits during your release](https://semantic-release.gitbook.io/semantic-release/support/faq#making-commits-during-the-release-process-adds-significant-complexity) to avoid unnecessary headaches.
 
 [![Build Status](https://github.com/semantic-release/git/workflows/Test/badge.svg)](https://github.com/semantic-release/git/actions?query=workflow%3ATest+branch%3Amaster) [![npm latest version](https://img.shields.io/npm/v/@semantic-release/git/latest.svg)](https://www.npmjs.com/package/@semantic-release/git)
-[![npm next version](https://img.shields.io/npm/v/@semantic-release/git/next.svg)](https://www.npmjs.com/package/@semantic-release/git)
 [![npm beta version](https://img.shields.io/npm/v/@semantic-release/git/beta.svg)](https://www.npmjs.com/package/@semantic-release/git)
 
 | Step               | Description                                                                                                                        |
