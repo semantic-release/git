@@ -25,7 +25,7 @@
     "debug": "^4.0.0",
     "dir-glob": "^3.0.0",
     "execa": "^9.0.0",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.18.0",
     "micromatch": "^4.0.0",
     "p-reduce": "^3.0.0"
   },
