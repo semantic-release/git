@@ -18,13 +18,17 @@ export function verifyConditions(pluginConfig, context) {
       pluginConfig.message,
       preparePlugin.message,
     );
+    pluginConfig.push_remote = defaultTo(
+      pluginConfig.push,
+      preparePlugin.push_remote,
+    );
   }
 
   verifyGit(pluginConfig);
   verified = true;
 }
 
-export async function prepare(pluginConfig, context) {
+async function prepare(pluginConfig, context) {
   if (!verified) {
     verifyGit(pluginConfig);
     verified = true;
