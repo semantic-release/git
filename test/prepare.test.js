@@ -70,11 +70,10 @@ test("Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.j
   t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
   t.is(commit.body, `${nextRelease.notes}\n`);
   t.is(commit.gitTags, `(HEAD -> ${branch.name})`);
-  t.deepEqual(t.context.log.args[0], ["Found %d file(s) to commit", 4]);
-  t.deepEqual(t.context.log.args[1], [
-    "Prepared Git release: %s",
-    nextRelease.gitTag,
-  ]);
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 4]);
+  t.deepEqual(t.context.log.args[1], ['Prepared Git release: %s', nextRelease.gitTag]);
+  // Verify push has occurred
+  t.deepEqual(t.context.log.args[2], ['Pushed Git release %s to remote', nextRelease.gitTag]);
 });
 
 test('Exclude CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.json if "assets" is defined without it', async (t) => {
@@ -435,4 +434,24 @@ test("Skip commit if there is no files to commit", async (t) => {
 
   // Verify the files that have been commited
   t.deepEqual(await gitCommitedFiles("HEAD", { cwd, env }), []);
+});
+
+test('Skip push if `push_remote` is configured to `false`', async (t) => {
+  const {cwd, repositoryUrl} = await gitRepo(true);
+  const pluginConfig = {assets: ['!**/*', 'file.js'], push_remote: false};
+  const branch = {name: 'master'};
+  const options = {repositoryUrl};
+  const env = {};
+  const lastRelease = {};
+  const nextRelease = {version: '2.0.0', gitTag: 'v2.0.0'};
+  await outputFile(path.resolve(cwd, 'file.js'), 'Test content');
+
+  await prepare(pluginConfig, {cwd, env, options, branch, lastRelease, nextRelease, logger: t.context.logger});
+
+  t.deepEqual(await gitCommitedFiles('HEAD', {cwd, env}), ['file.js']);
+  t.deepEqual(t.context.log.args[0], ['Found %d file(s) to commit', 1]);
+
+  // Verify push has not occurred
+  const [commit] = await gitGetCommits(undefined, {cwd});
+  t.notDeepEqual(await gitRemoteHead(repositoryUrl, {cwd}), commit.commit.long);
 });
