@@ -35,7 +35,7 @@
     "git-log-parser": "1.2.1",
     "lockfile-lint": "5.1.0",
     "ls-engines": "0.10.1",
-    "npm-run-all2": "9.0.3",
+    "npm-run-all2": "9.0.4",
     "prettier": "3.9.10",
     "publint": "0.3.25",
     "semantic-release": "25.0.9",
