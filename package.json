@@ -30,7 +30,7 @@
     "p-reduce": "^3.0.0"
   },
   "devDependencies": {
-    "ava": "8.1.1",
+    "ava": "8.1.2",
     "c8": "12.0.0",
     "git-log-parser": "1.2.1",
     "lockfile-lint": "5.1.0",
