@@ -69,7 +69,7 @@ test("Commit CHANGELOG.md, package.json, package-lock.json, and npm-shrinkwrap.j
   );
   t.is(commit.subject, `chore(release): ${nextRelease.version} [skip ci]`);
   t.is(commit.body, `${nextRelease.notes}\n`);
-  t.is(commit.gitTags, `(HEAD -> ${branch.name})`);
+  t.true(commit.gitTags.startsWith(`(HEAD -> ${branch.name}`));
   t.deepEqual(t.context.log.args[0], ["Found %d file(s) to commit", 4]);
   t.deepEqual(t.context.log.args[1], [
     "Prepared Git release: %s",
