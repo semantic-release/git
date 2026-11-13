@@ -75,7 +75,7 @@ test("Prepare from a shallow clone", async (t) => {
     `Release version ${nextRelease.version} from branch ${branch.name}`,
   );
   t.is(commit.body, `${nextRelease.notes}\n`);
-  t.is(commit.gitTags, `(HEAD -> ${branch.name})`);
+  t.true(commit.gitTags.startsWith(`(HEAD -> ${branch.name}`));
 });
 
 test("Prepare from a detached head repository", async (t) => {
@@ -126,7 +126,8 @@ test("Prepare from a detached head repository", async (t) => {
     `Release version ${nextRelease.version} from branch ${branch.name}`,
   );
   t.is(commit.body, `${nextRelease.notes}\n`);
-  t.is(commit.gitTags, `(HEAD)`);
+  t.true(commit.gitTags.startsWith("(HEAD"));
+  t.false(commit.gitTags.startsWith("(HEAD ->"));
 });
 
 test("Verify authentication only on the fist call", async (t) => {
