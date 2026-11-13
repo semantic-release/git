@@ -43,7 +43,7 @@
     "tempy": "3.2.0"
   },
   "engines": {
-    "node": "^22.22.2 || >=24.15"
+    "node": ">=26.13"
   },
   "exports": "./index.js",
   "files": [
