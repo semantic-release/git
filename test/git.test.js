@@ -51,6 +51,16 @@ test("Get the modified files, including files in .gitignore but including untrac
   );
 });
 
+test("Get the modified files when git output exceeds the default buffer", async (t) => {
+  const { cwd } = await gitRepo();
+  const longName = `${"a".repeat(250)}.js`;
+  await outputFile(path.resolve(cwd, longName), "Test content");
+
+  const modifiedFiles = await getModifiedFiles({ cwd, maxBuffer: 10 });
+
+  t.deepEqual(modifiedFiles, [longName]);
+});
+
 test("Returns [] if there is no modified files", async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
